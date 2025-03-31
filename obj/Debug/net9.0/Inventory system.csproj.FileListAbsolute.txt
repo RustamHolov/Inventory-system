@@ -1,0 +1,14 @@
+C:\Users\roshf\Inventory system\bin\Debug\net9.0\Inventory system.exe
+C:\Users\roshf\Inventory system\bin\Debug\net9.0\Inventory system.deps.json
+C:\Users\roshf\Inventory system\bin\Debug\net9.0\Inventory system.runtimeconfig.json
+C:\Users\roshf\Inventory system\bin\Debug\net9.0\Inventory system.dll
+C:\Users\roshf\Inventory system\bin\Debug\net9.0\Inventory system.pdb
+C:\Users\roshf\Inventory system\obj\Debug\net9.0\Inventory system.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\roshf\Inventory system\obj\Debug\net9.0\Inventory system.AssemblyInfoInputs.cache
+C:\Users\roshf\Inventory system\obj\Debug\net9.0\Inventory system.AssemblyInfo.cs
+C:\Users\roshf\Inventory system\obj\Debug\net9.0\Inventory system.csproj.CoreCompileInputs.cache
+C:\Users\roshf\Inventory system\obj\Debug\net9.0\Inventory system.dll
+C:\Users\roshf\Inventory system\obj\Debug\net9.0\refint\Inventory system.dll
+C:\Users\roshf\Inventory system\obj\Debug\net9.0\Inventory system.pdb
+C:\Users\roshf\Inventory system\obj\Debug\net9.0\Inventory system.genruntimeconfig.cache
+C:\Users\roshf\Inventory system\obj\Debug\net9.0\ref\Inventory system.dll
