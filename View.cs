@@ -29,8 +29,8 @@ public class View{
         }
         Console.WriteLine("─────────────────────────────");
     }
-    public void DisplayMembers(Dictionary<int, Models.Member> members, string[] flags) { }
-    public void DisplayMembers(Dictionary<int, Models.Member> members){
+    public void DisplayMembers(Dictionary<int, Member> members, string[] flags) { }
+    public void DisplayMembers(Dictionary<int, Member> members){
         string header = InfoInFrame("ID          Full Name");
         foreach (var member in members){
             string item = $"ID:{member.Key} Name: {member.Value.Name} {member.Value.SurName}";
@@ -38,10 +38,16 @@ public class View{
             header += line;
         }
         Console.WriteLine(header + InfoInFrame("ID          Full Name"));
-        Console.WriteLine("ID          Full Name".Length);
     }
-    public void DisplaySingleMember(Dictionary<string, Models.Member> members, string member){}
-    public void DisplayEditingMember(Dictionary<string, Models.Member> members,string member){}
+    public void DisplaySingleMember(Member member){
+        string[] items = member.ToString().Split("\n");
+        for (int i = 0; i < items.Length; i++){
+            Console.WriteLine($"{i+1}. {items[i]}");
+        }
+        Console.WriteLine("─────────────────────────────");
+
+    }
+    public void DisplayEditingMember(Dictionary<string, Member> members,string member){}
     public void DisplayException(Exception ex){}
 
 }

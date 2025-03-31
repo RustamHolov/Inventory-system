@@ -26,6 +26,20 @@ public class Input
             throw new Exception("Invalid number");
         }
     }
+    public bool TryGetMenuItem(int range, out int item)
+    {
+        Console.WriteLine("Select an item:");
+        if (int.TryParse(GetProperInput(), out int number) && number > 0 && number <= range)
+        {
+            item = number;
+            return true;
+        }
+        else
+        {
+            item = -1;
+            throw new Exception("Invalid number");
+        }
+    }
 
     public bool TryGetStartDate(out DateTime startDate)
     {
@@ -43,7 +57,7 @@ public class Input
     }
     public bool TryGetName(out string name)
     {
-        Console.WriteLine("Enter your name:");
+        Console.WriteLine("Enter your name or surname:");
         string nameRegex = @"^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$";
         string Name = GetProperInput();
         if (Regex.IsMatch(Name, nameRegex))
@@ -76,7 +90,7 @@ public class Input
     public bool TryGetPhone(out string phone)
     {
         Console.WriteLine("Enter your phone:");
-        string phoneRegex = @"^\+?[0-9]{1,3}[-. ]?\(?[0-9]{1,4}\)?[-. ]?[0-9]{1,4}[-. ]?[0-9]{1,9}$";
+        string phoneRegex = @"^\+?[0-9]{1,3}[-. ]?\(?[0-9]{1,4}?\)?[-. ]?[0-9]{1,4}[-. ]?[0-9]{1,9}$"; // international phone number format
         string Phone = GetProperInput();
         if (Regex.IsMatch(Phone, phoneRegex))
         {
@@ -89,11 +103,13 @@ public class Input
             throw new Exception("Invalid format, try again");
         }
     }
-    public bool TryGetMale(out string male){
-        Console.WriteLine("Enter your male:");
+    public bool TryGetSex(out string male)
+    {
+        Console.WriteLine("Enter your sex in format (Male|Female|Other):");
         string maleRegex = @"^(?:male|female|other)$";
         string Male = GetProperInput();
-        if (!Regex.IsMatch(Male,maleRegex)){
+        if (!Regex.IsMatch(Male, maleRegex))
+        {
             male = Male;
             return true;
         }
@@ -136,7 +152,8 @@ public class Input
     }
     #endregion
     #region "Recursed Get-Methods"
-    public int GetMenuItem(Dictionary<int, string> menu){
+    public int GetMenuItem(Dictionary<int, string> menu)
+    {
         try
         {
             TryGetMenuItem(menu, out int item);
@@ -146,6 +163,19 @@ public class Input
         {
             Console.WriteLine(e.Message);
             return GetMenuItem(menu);
+        }
+    }
+    public int GetMenuItem(int range)
+    {
+        try
+        {
+            TryGetMenuItem(range, out int item);
+            return item;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            return GetMenuItem(range);
         }
     }
     public DateTime GetStartDate()
@@ -226,16 +256,17 @@ public class Input
             return GetCourse();
         }
     }
-    public string GetMale(){
+    public string GetSex()
+    {
         try
         {
-            TryGetMale(out string male);
+            TryGetSex(out string male);
             return male;
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Console.WriteLine(e.Message);
-            return GetMale();
+            return GetSex();
         }
     }
     #endregion
