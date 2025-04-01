@@ -1,8 +1,11 @@
 using System.Text;
+using System;
+using System.Reflection;
 
-public class View{
+public class View
+{
     public string InfoInFrame(string info)
-    {                             //auto-adjustable frame
+    {                             //auto-adjustable one line frame
         int contentLength = info.Length + 2;        // +2 to include whitespaces both at start and end
         string line = new string('═', contentLength);
         string top = "╔" + line + "╗";
@@ -11,13 +14,9 @@ public class View{
         string framed = $"{top}\n{middle}\n{bottom}\n";
         return framed;
     }
-    public string InfoInBorders(string info, int length){
-        string halfLine = "";
-        if (info.Length < length){
-            length = length - info.Length;
-            halfLine = new string(' ', length/2);
-        }
-        string middle = "║ "+ halfLine + info + halfLine +" ║\n";
+    public string InfoInBorders(string info)
+    {
+        string middle = "║ " + info + "\n";
         return middle;
     }
 
@@ -30,24 +29,36 @@ public class View{
         Console.WriteLine("─────────────────────────────");
     }
     public void DisplayMembers(Dictionary<int, Member> members, string[] flags) { }
-    public void DisplayMembers(Dictionary<int, Member> members){
-        string header = InfoInFrame("ID          Full Name");
-        foreach (var member in members){
-            string item = $"ID:{member.Key} Name: {member.Value.Name} {member.Value.SurName}";
-            string line = InfoInBorders(item,"ID          Full Name".Length);
-            header += line;
+    public void DisplayMembers(Dictionary<int, Member> members)
+    {
+        Console.Clear();
+        Console.WriteLine(InfoInFrame("Members"));
+        foreach (var member in members)
+        {
+            Console.Write($"ID: {member.Key} {InfoInBorders(member.Value.ToString())}");
         }
-        Console.WriteLine(header + InfoInFrame("ID          Full Name"));
+        Console.WriteLine("─────────────────────────────");
     }
-    public void DisplaySingleMember(Member member){
-        string[] items = member.ToString().Split("\n");
-        for (int i = 0; i < items.Length; i++){
-            Console.WriteLine($"{i+1}. {items[i]}");
-        }
+    public void DisplaySingleMember(Member member)
+    {
+        Console.WriteLine(InfoInFrame("Member"));
+        Console.WriteLine(InfoInBorders(member.ToString()));
         Console.WriteLine("─────────────────────────────");
 
     }
-    public void DisplayEditingMember(Dictionary<string, Member> members,string member){}
-    public void DisplayException(Exception ex){}
+    public void DisplayForm(Dictionary<string, string> fields, string fieldName = "",bool count = false)
+    {
+        bool editing = fieldName != string.Empty;
+        Console.Clear();
+        int i = 1;
+        foreach (var field in fields)
+        {
+            bool chosenField = field.Key == fieldName;
+            Console.WriteLine($"{(count ? i + "." : "")} {(editing && chosenField ? "    > " + field.Key : field.Key)}: {(field.Value == string.Empty ? "" : field.Value)}");
+            i++;
+        }
+        Console.WriteLine("─────────────────────────────");
+    }
+    public void DisplayException(Exception ex) { }
 
 }

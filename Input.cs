@@ -11,6 +11,7 @@ public class Input
             _ => userInput.Trim()
         };
     }
+
     #region "TryParsing-Methods"
     public bool TryGetMenuItem(Dictionary<int, string> menu, out int item)
     {
@@ -40,10 +41,24 @@ public class Input
             throw new Exception("Invalid number");
         }
     }
+    public bool TryGetMenuItem(List<int> list, out int item)
+    {
+        Console.WriteLine("Select an item:");
+        if (int.TryParse(GetProperInput(), out int number) && list.Contains(number))
+        {
+            item = number;
+            return true;
+        }
+        else
+        {
+            item = -1;
+            throw new Exception("Invalid number");
+        }
+    }
 
     public bool TryGetStartDate(out DateTime startDate)
     {
-        Console.WriteLine("Enter your birth date:");
+        Console.WriteLine("Enter the date:");
         if (DateTime.TryParse(GetProperInput(), out DateTime result))
         {
             startDate = result;
@@ -55,9 +70,9 @@ public class Input
             throw new Exception("Invalid date format");
         }
     }
-    public bool TryGetName(out string name)
+    public bool TryGetTitle(out string name)
     {
-        Console.WriteLine("Enter your name or surname:");
+        Console.WriteLine("Enter the title:");
         string nameRegex = @"^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$";
         string Name = GetProperInput();
         if (Regex.IsMatch(Name, nameRegex))
@@ -68,6 +83,21 @@ public class Input
         else
         {
             name = "";
+            throw new Exception("Invalid format, try again");
+        }
+    }
+    public bool TryGetCourse(out string course){
+        Console.WriteLine("Enter your subject:");
+        string courseRegex = @"^[\p{L}\p{N}\s\-_.,!@#$%^&*()+=`~\p{S}\p{P}]*$";
+        string Course = GetProperInput();
+        if (Regex.IsMatch(Course, courseRegex))
+        {
+            course = Course;
+            return true;
+        }
+        else
+        {
+            course = "";
             throw new Exception("Invalid format, try again");
         }
     }
@@ -103,19 +133,19 @@ public class Input
             throw new Exception("Invalid format, try again");
         }
     }
-    public bool TryGetSex(out string male)
+    public bool TryGetSex(out string sex)
     {
         Console.WriteLine("Enter your sex in format (Male|Female|Other):");
-        string maleRegex = @"^(?:male|female|other)$";
+        string maleRegex = @"^(?:Male|Female|Other)$";
         string Male = GetProperInput();
-        if (!Regex.IsMatch(Male, maleRegex))
+        if (!Regex.IsMatch(Male.ToLower(), maleRegex))
         {
-            male = Male;
+            sex = Male;
             return true;
         }
         else
         {
-            male = "";
+            sex = "";
             throw new Exception("Invalid format, try again");
         }
     }
@@ -134,22 +164,6 @@ public class Input
         }
     }
 
-    public bool TryGetCourse(out string course)
-    {
-        Console.WriteLine("Enter your course:");
-        string courseRegex = @"^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$";
-        string Course = GetProperInput();
-        if (Regex.IsMatch(Course, courseRegex))
-        {
-            course = Course;
-            return true;
-        }
-        else
-        {
-            course = "";
-            throw new Exception("Invalid format, try again");
-        }
-    }
     #endregion
     #region "Recursed Get-Methods"
     public int GetMenuItem(Dictionary<int, string> menu)
@@ -178,6 +192,19 @@ public class Input
             return GetMenuItem(range);
         }
     }
+    public int GetMenuItem(List<int> list)
+    {
+        try
+        {
+            TryGetMenuItem(list, out int item);
+            return item;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            return GetMenuItem(list);
+        }
+    }
     public DateTime GetStartDate()
     {
         try
@@ -191,17 +218,17 @@ public class Input
             return GetStartDate();
         }
     }
-    public string GetName()
+    public string GetTitle()
     {
         try
         {
-            TryGetName(out string name);
+            TryGetTitle(out string name);
             return name;
         }
         catch (Exception e)
         {
             Console.WriteLine(e.Message);
-            return GetName();
+            return GetTitle();
         }
     }
     public string GetEmail()
