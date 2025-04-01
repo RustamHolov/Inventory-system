@@ -16,7 +16,7 @@ public class Controller
     {
         { 1, "Add a member" },
         { 2, "Edit a member" },
-        // { 3, "Delete a member" },
+        { 3, "Delete a member" },
         // { 4, "Display a single member" },
         { 5, "Display all members" },
         { 0, "Exit" }
@@ -191,7 +191,7 @@ public class Controller
         int id = _input.GetMenuItem(_dataBase.Members.Keys.ToList());
         Member member = _dataBase.GetMember(id);
         Type memberType = member.GetType();
-        Dictionary<string, string> fields = GetProrepties(memberType);
+        Dictionary<string, string> fields = new Dictionary<string, string>();
         foreach (var property in memberType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
         {
             fields[property.Name] = property.GetValue(member)?.ToString() ?? string.Empty;
@@ -211,9 +211,27 @@ public class Controller
         editMenu();
     }
 
-    private void DeleteMember()
+    private void DeleteMember() //TODO Create the menu, input method for confirmation and display the member to be deleted
     {
-        throw new NotImplementedException();
+        _view.DisplayMembers(_dataBase.Members);
+        Console.WriteLine("[ID of the member you want to delete]");
+        int id = _input.GetMenuItem(_dataBase.Members.Keys.ToList());
+        Console.WriteLine($"Are you sure you want to delete member with ID {id}? (y/n)");
+        string confirmation = _input.GetProperInput().ToLower();
+        if(confirmation.Contains("y")){
+            try{
+                _dataBase.DeleteMember(id);
+                Console.Clear();
+                Console.WriteLine("Member deleted successfully!");
+            }catch(Exception e){
+                Console.WriteLine(e.Message);
+            }
+        }else if(confirmation.Contains("n")){
+            Console.WriteLine("Member deletion cancelled.");
+        }else{
+            Console.WriteLine("Invalid input. Member deletion cancelled.");
+        }
+        Console.WriteLine("─────────────────────────────");
     }
     private void DisplayMembers()
     {
