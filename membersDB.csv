@@ -1,0 +1,7 @@
+Id,Type,Name,Surname,Age,Sex,Email,Phone,Subject,Course,StartDate
+1,Member,Jane,Doe,12.09.1996,female,l@l.com,123456789,,,
+2,Member,John,Smith,05.03.1988,male,john.smith@email.net,987654321,,,
+3,Member,Emily,Wilson,22.11.2001,female,emily.w@example.org,555123456,,,
+4,Teacher,Sophia,Garcia,30.04.1992,female,sophia.g@domain.com,998877665,Math,,
+5,Student,Michael,Brown,18.07.1975,male,m.brown75@mail.co.uk,112233445,,C#,17.02.2024
+6,Member,Rustam,R,09-Dec-25,Male,r@r.com,32567654,,,

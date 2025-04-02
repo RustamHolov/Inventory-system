@@ -13,7 +13,7 @@ public class Controller
         _dataBase = dataBase;
     }
     
-    private Dictionary<string, string> GetProrepties(Type type)
+    private Dictionary<string, string> GetEmptyProrepties(Type type)
     {
         Dictionary<string, string> fields = new Dictionary<string, string>();
         PropertyInfo[] properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
@@ -40,6 +40,7 @@ public class Controller
                 case "Course": fields["Course"] = _input.GetCourse(); break;
                 case "StartDate": fields["StartDate"] = _input.GetStartDate().ToString("d"); break;
             }
+            _dataBase.edited = true;
         }
     private void FillForm(Dictionary<string, string> fields)
     {
@@ -119,7 +120,7 @@ public class Controller
     }
     private void AddMember(Type member)
     {
-        Dictionary<string, string> fields = GetProrepties(member);
+        Dictionary<string, string> fields = GetEmptyProrepties(member);
         _view.DisplayForm(fields);
         void addMenu()
         {
@@ -130,7 +131,7 @@ public class Controller
                 case 2: EditField(fields); addMenu(); break;
                 case 3: SaveMember(fields, member); addMenu(); break;
                 case 9: Console.Clear(); MainMenu(); break;
-                case 0: Environment.Exit(0); break;
+                case 0: Exit(); break;
             }
         }
         addMenu();
@@ -144,7 +145,7 @@ public class Controller
             case 2: AddMember(typeof(Student)); break;
             case 3: AddMember(typeof(Member)); break;
             case 9: Console.Clear(); MainMenu(); break;
-            case 0: Environment.Exit(0); break;
+            case 0: Exit(); break;
         }
 
     }
@@ -170,7 +171,7 @@ public class Controller
                 case 1: EditField(fields); editMenu(); break;
                 case 2: SaveMember(fields, memberType, id); editMenu(); break;
                 case 9: Console.Clear(); MainMenu(); break;
-                case 0: Environment.Exit(0); break;
+                case 0: Exit(); break;
             }
         }
         editMenu();
@@ -188,6 +189,7 @@ public class Controller
         {
             try{
                 _dataBase.DeleteMember(id);
+                _dataBase.edited = true;
                 Console.Clear();
                 Console.WriteLine("Member deleted successfully!");
             }catch(Exception e){
@@ -203,7 +205,28 @@ public class Controller
         Console.Clear();
         _view.DisplayMembers(_dataBase.Members);
     }
-
+    private void SaveDataBase()
+    {
+        Console.Clear();
+        if (_dataBase.edited)
+        {
+            _dataBase.SaveToCSV();
+            _dataBase.edited = false;
+            Console.WriteLine("Data saved successfully!");
+        }
+    }
+    private void Exit(){
+        if(_dataBase.edited)
+        {
+            Console.Write("Do you want to save changes before exiting");
+            bool confirmation = _input.GetYesNo();
+            if (confirmation)
+            {
+                SaveDataBase();
+            }
+        }
+        Environment.Exit(0);
+    }
     private void MainMenu()
     {
         _view.DisplayUndercsore();
@@ -214,7 +237,8 @@ public class Controller
             case 2: EditMember(); break;
             case 3: DeleteMember(); MainMenu(); break;
             case 4: DisplayMembers(); MainMenu(); break;
-            case 0: Environment.Exit(0); break;
+            case 5: SaveDataBase(); MainMenu(); break;
+            case 0: Exit(); break;
         }
     }
 

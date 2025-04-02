@@ -10,6 +10,7 @@ public class View
         { 2, "Edit a member" },
         { 3, "Delete a member" },
         { 4, "Display all members" },
+        { 5, "Save Data"},
         { 0, "Exit" }
     };
     public Dictionary<int, string> AddMenu = new Dictionary<int, string>(){
