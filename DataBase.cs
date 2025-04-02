@@ -98,7 +98,7 @@ public class DataBase{
     public void SaveToCSV(){
         try{
             using (StreamWriter sw = new StreamWriter(_csvPath)){
-                sw.WriteLine("Id,Type,Name,Surname,Age,Sex,Email,Phone,Subject,Course,StartDate");
+                sw.WriteLine("Id,Type,Name,Surname,Birth,Sex,Email,Phone,Subject,Course,StartDate");
                 foreach (var memberPair in _members){
                     var member = memberPair.Value;
                     string type = member.GetType().Name;
