@@ -75,6 +75,7 @@ public class Member
             }
         }
     }
+    public static int FieldsToFill() => typeof(Member).GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Length;
     public override string ToString()
     {
         return $"Role: {GetType().Name} Name: {Name} Surname: {Surname} Birth: {Birth} Sex: {Sex} Email: {Email} Phone: {Phone}";

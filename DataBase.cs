@@ -1,4 +1,4 @@
-
+using System.Reflection;
 public class DataBase{
     private Dictionary<int, Member> _members { get; set; } = new Dictionary<int, Member>();
     private int _nexID = 1;
@@ -62,31 +62,31 @@ public class DataBase{
     public void LoadFromCSV(){
         _members.Clear();
         _nexID = 1;
-        try{
+        try{// implement dictionaries and loops
             using (StreamReader reader = new StreamReader(_csvPath)){
-                reader.ReadLine(); // Skip header line
+                string header = reader.ReadLine() ?? throw new Exception("No header found"); //header line with ID, exception in case if no header provided
+                string[] titles = header.Split(',');
                 string? line;
                 while ((line = reader.ReadLine()) != null){
-                    string[] fields = line.Split(',');
-                    if(fields.Length == 11){
-                        if(int.TryParse(fields[0], out int id)){
-                            string type = fields[1];
-                            string name = fields[2];
-                            string surname = fields[3];
-                            string birth = fields[4];
-                            string sex = fields[5];
-                            string email = fields[6];
-                            string phone = fields[7];
-                            Member? member = null;
-                            switch(type){
-                                case "Member": member = new Member(name, surname, birth, sex, email, phone); break;
-                                case "Teacher": member = new Teacher(name, surname, birth, sex, email, phone, fields[8]); break;
-                                case "Student": member = new Student(name, surname, birth, sex, email, phone, fields[9], fields[10]); break;
-                                default: Console.WriteLine($"Unknown member type: {type}"); continue;
-                            }
-                            _members.Add(id, member);
-                            _nexID = Math.Max(_nexID, id + 1); // Update next ID based on the highest ID in the file
+                    string[] values = line.Split(',');
+                    Dictionary<string, string> table = titles.Zip(values, (k, v) => new { Key = k, Value = v })
+                   .ToDictionary(x => x.Key, x => x.Value);
+                    if (int.TryParse(values[0], out int id)){
+                        Member member = values[1] switch
+                        {
+                            "Member" => new Member(),
+                            "Teacher" => new Teacher(),
+                            "Student" => new Student(),
+                            _ => throw new Exception($"Unknown type {values[1]}")
+                        };
+                        Dictionary<string,string> fields = member.GetPropertiesAndValues();
+                        foreach (var fieldName in fields.Keys){ 
+                            fields[fieldName] = table[fieldName];
                         }
+                        
+                        member.AssignValues(fields);
+                        _members.Add(id, member);
+                        _nexID = Math.Max(_nexID, id + 1); 
                     }
                 }
             }

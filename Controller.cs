@@ -14,10 +14,10 @@ public class Controller
     }
 
     private void GetAndSetFields(Dictionary<string, string> fields, string fieldName)
-    {//
+    {
         Console.Clear();
-        _view.DisplayForm(fields, fieldName); //view objects properties and point out editing field
-        switch (fieldName) //based on the field name, call the appropriate method to get the value from the user
+        _view.DisplayForm(fields, fieldName);
+        switch (fieldName)
         {
             case "Name": fields["Name"] = _input.GetTitle(); break;
             case "Surname": fields["Surname"] = _input.GetTitle(); break;
@@ -32,7 +32,7 @@ public class Controller
         _dataBase.edited = true;
     }
     private void FillForm(Dictionary<string, string> fields)
-    {//takes dictionary of properties and their values of the object(keys are property names, values are empty or not) and call actual filling method respectively 
+    {
         _view.DisplayForm(fields);
         foreach (var fieldName in fields.Keys)
         {
@@ -82,7 +82,7 @@ public class Controller
         }
     }
     private void AddMember(Member member)
-    {//should be called method on instance, which collect properties with empty values(basically instance called with no argumnet constructor)
+    {
         Dictionary<string, string> fields = member.GetPropertiesAndValues();
         _view.DisplayForm(fields);
         void addMenu()
