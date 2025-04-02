@@ -79,7 +79,7 @@ public class Controller
                 GetAndSetFields(fields, fieldName);
             }
         }
-        Console.WriteLine("Filled out the form successfully!");
+        _view.DisplayMessageUnderscore("All fields filled out successfully!");
         _view.DisplayForm(fields);
     }
     private void EditField(Dictionary<string, string> fields)
@@ -132,20 +132,17 @@ public class Controller
                     fields[fieldName] = string.Empty;
                 }
                 _view.DisplayForm(fields);
-                Console.WriteLine("Member added successfully!");
-                Console.WriteLine("─────────────────────────────");
+                _view.DisplayMessageUnderscore("Member saved successfully!");
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                Console.WriteLine("─────────────────────────────");
+                _view.DisplayMessageUnderscore(e.Message);
             }
         }
         else
         {
             _view.DisplayForm(fields);
-            Console.WriteLine("Please fill out all fields before saving.");
-            Console.WriteLine("─────────────────────────────");
+            _view.DisplayMessageUnderscore("Please fill out all fields before saving.");
         }
     }
     private void AddMember(Type member)
@@ -216,9 +213,10 @@ public class Controller
         _view.DisplayMembers(_dataBase.Members);
         Console.WriteLine("[ID of the member you want to delete]");
         int id = _input.GetMenuItem(_dataBase.Members.Keys.ToList());
-        Console.WriteLine($"Are you sure you want to delete member with ID {id}? (y/n)");
-        string confirmation = _input.GetProperInput().ToLower();
-        if(confirmation.Contains("y")){
+        Console.Write($"Are you sure you want to delete [ID: {id}]?");
+        bool confirmation = _input.GetYesNo();
+        if (confirmation)
+        {
             try{
                 _dataBase.DeleteMember(id);
                 Console.Clear();
@@ -226,12 +224,10 @@ public class Controller
             }catch(Exception e){
                 Console.WriteLine(e.Message);
             }
-        }else if(confirmation.Contains("n")){
-            Console.WriteLine("Member deletion cancelled.");
-        }else{
-            Console.WriteLine("Invalid input. Member deletion cancelled.");
+        }else {
+             Console.Clear();
+            _view.DisplayMessageUnderscore("Member deletion cancelled.");
         }
-        Console.WriteLine("─────────────────────────────");
     }
     private void DisplayMembers()
     {
@@ -241,7 +237,7 @@ public class Controller
 
     private void MainMenu()
     {
-        Console.WriteLine("─────────────────────────────");
+        _view.DisplayUndercsore();
         _view.DisplayMenu(Menu);
         switch (_input.GetMenuItem(Menu))
         {

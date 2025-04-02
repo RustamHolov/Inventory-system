@@ -55,6 +55,26 @@ public class Input
             throw new Exception("Invalid number");
         }
     }
+    public bool TryGetYesNo(out bool yesNo)
+    {
+        Console.WriteLine(" yes/no (y/n): ");
+        string input = GetProperInput().ToLower();
+        if (input == "y" || input == "yes")
+        {
+            yesNo = true;
+            return true;
+        }
+        else if (input == "n" || input == "no")
+        {
+            yesNo = false;
+            return true;
+        }
+        else
+        {
+            yesNo = false;
+            throw new Exception("Invalid input, try again");
+        }
+    }
 
     public bool TryGetStartDate(out DateTime startDate)
     {
@@ -165,7 +185,7 @@ public class Input
     }
 
     #endregion
-    #region "Recursed Get-Methods"
+    #region "Recursive Get-Methods"
     public int GetMenuItem(Dictionary<int, string> menu)
     {
         try
@@ -294,6 +314,19 @@ public class Input
         {
             Console.WriteLine(e.Message);
             return GetSex();
+        }
+    }
+    public bool GetYesNo()
+    {
+        try
+        {
+            TryGetYesNo(out bool yesNo);
+            return yesNo;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            return GetYesNo();
         }
     }
     #endregion

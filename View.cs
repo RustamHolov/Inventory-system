@@ -61,4 +61,14 @@ public class View
     }
     public void DisplayException(Exception ex) { }
 
+    
+    public void DisplayUndercsore()
+    {
+        Console.WriteLine("─────────────────────────────");
+    }
+    public void DisplayMessageUnderscore(string message)
+    {
+        Console.WriteLine(message);
+        DisplayUndercsore();
+    }
 }
