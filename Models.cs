@@ -64,15 +64,18 @@ public class Member
         {
             string propertyName = kvp.Key;
             string propertyValue = kvp.Value;
-            PropertyInfo? property = GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty);
-            if (property != null)
-            {
-                property.SetValue(this, propertyValue);
+            if(GetPropertiesAndValues().ContainsKey(propertyName)){
+                PropertyInfo? property = GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty);
+                if (property != null)
+                {
+                    property.SetValue(this, propertyValue);
+                }
+                else
+                {
+                    throw new Exception($"Property {propertyName} not found on type {GetType()}");
+                }
             }
-            else
-            {
-                throw new Exception($"Property {propertyName} not found on type {GetType()}");
-            }
+            
         }
     }
     public static int FieldsToFill() => typeof(Member).GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Length;

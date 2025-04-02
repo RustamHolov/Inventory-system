@@ -64,11 +64,11 @@ public class DataBase{
         _nexID = 1;
         try{// implement dictionaries and loops
             using (StreamReader reader = new StreamReader(_csvPath)){
-                string header = reader.ReadLine() ?? throw new Exception("No header found"); //header line with ID, exception in case if no header provided
-                string[] titles = header.Split(',');
+                string[] titles = reader.ReadLine()?.Split(',') ?? throw new Exception("No header found");
                 string? line;
                 while ((line = reader.ReadLine()) != null){
                     string[] values = line.Split(',');
+                    if(titles.Length != values.Length) throw new Exception("Something went wrong with tables");
                     Dictionary<string, string> table = titles.Zip(values, (k, v) => new { Key = k, Value = v })
                    .ToDictionary(x => x.Key, x => x.Value);
                     if (int.TryParse(values[0], out int id)){
@@ -79,12 +79,7 @@ public class DataBase{
                             "Student" => new Student(),
                             _ => throw new Exception($"Unknown type {values[1]}")
                         };
-                        Dictionary<string,string> fields = member.GetPropertiesAndValues();
-                        foreach (var fieldName in fields.Keys){ 
-                            fields[fieldName] = table[fieldName];
-                        }
-                        
-                        member.AssignValues(fields);
+                        member.AssignValues(table);
                         _members.Add(id, member);
                         _nexID = Math.Max(_nexID, id + 1); 
                     }
