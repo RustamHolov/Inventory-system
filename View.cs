@@ -76,7 +76,7 @@ public class View
 
     }
     public void DisplayForm(Dictionary<string, string> fields, string fieldName = "",bool count = false)
-    {
+    { //Displays object with empty or filled fields, show if field is being edited or give fields numbers. Takes dictionary of properties and their values of the object
         bool editing = fieldName != string.Empty;
         Console.Clear();
         int i = 1;

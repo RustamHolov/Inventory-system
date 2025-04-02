@@ -12,38 +12,27 @@ public class Controller
         _input = input;
         _dataBase = dataBase;
     }
-    
-    private Dictionary<string, string> GetEmptyProrepties(Type type)
-    {
-        Dictionary<string, string> fields = new Dictionary<string, string>();
-        PropertyInfo[] properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
-        foreach (var property in properties)
-        {
-            fields.Add(property.Name, string.Empty);
-        }
-        return fields;
-    }
 
     private void GetAndSetFields(Dictionary<string, string> fields, string fieldName)
+    {//
+        Console.Clear();
+        _view.DisplayForm(fields, fieldName); //view objects properties and point out editing field
+        switch (fieldName) //based on the field name, call the appropriate method to get the value from the user
         {
-            Console.Clear();
-            _view.DisplayForm(fields, fieldName);
-            switch (fieldName)
-            {
-                case "Name": fields["Name"] = _input.GetTitle(); break;
-                case "Surname": fields["Surname"] = _input.GetTitle(); break;
-                case "Birth": fields["Birth"] = _input.GetStartDate().ToString("d"); break;
-                case "Sex": fields["Sex"] = _input.GetSex(); break;
-                case "Email": fields["Email"] = _input.GetEmail(); break;
-                case "Phone": fields["Phone"] = _input.GetPhone(); break;
-                case "Subject": fields["Subject"] = _input.GetCourse(); break;
-                case "Course": fields["Course"] = _input.GetCourse(); break;
-                case "StartDate": fields["StartDate"] = _input.GetStartDate().ToString("d"); break;
-            }
-            _dataBase.edited = true;
+            case "Name": fields["Name"] = _input.GetTitle(); break;
+            case "Surname": fields["Surname"] = _input.GetTitle(); break;
+            case "Birth": fields["Birth"] = _input.GetStartDate().ToString("d"); break;
+            case "Sex": fields["Sex"] = _input.GetSex(); break;
+            case "Email": fields["Email"] = _input.GetEmail(); break;
+            case "Phone": fields["Phone"] = _input.GetPhone(); break;
+            case "Subject": fields["Subject"] = _input.GetCourse(); break;
+            case "Course": fields["Course"] = _input.GetCourse(); break;
+            case "StartDate": fields["StartDate"] = _input.GetStartDate().ToString("d"); break;
         }
+        _dataBase.edited = true;
+    }
     private void FillForm(Dictionary<string, string> fields)
-    {
+    {//takes dictionary of properties and their values of the object(keys are property names, values are empty or not) and call actual filling method respectively 
         _view.DisplayForm(fields);
         foreach (var fieldName in fields.Keys)
         {
@@ -63,49 +52,23 @@ public class Controller
         GetAndSetFields(fields, fieldName);
         _view.DisplayForm(fields);
     }
-    private void SaveMember(Dictionary<string, string> fields, Type member,int id = 0)
+    private void SaveMember(Dictionary<string, string> fields, Member member, int id = 0)
     {
         if (fields.Values.All(f => !string.IsNullOrEmpty(f.ToString())))
         {
-
-            Member _member = member switch
-            {
-                _ when member == typeof(Member) => new Member(fields["Name"],
-                fields["Surname"],
-                fields["Birth"],
-                fields["Sex"],
-                fields["Email"],
-                fields["Phone"]),
-                _ when member == typeof(Teacher) => new Teacher(fields["Name"],
-                fields["Surname"],
-                fields["Birth"],
-                fields["Sex"],
-                fields["Email"],
-                fields["Phone"],
-                fields["Subject"]),
-                _ when member == typeof(Student) => new Student(fields["Name"],
-                fields["Surname"],
-                fields["Birth"],
-                fields["Sex"],
-                fields["Email"],
-                fields["Phone"],
-                fields["Course"],
-                fields["StartDate"]),
-                _ => throw new Exception("Invalid type")
-            };
+            member.AssignValues(fields);
             try
             {
-                if (id == 0){
-                    _dataBase.AddMember(_member);
-                }else{
-                    _dataBase.EditMember(id, _member);
-                }
-                foreach (var fieldName in fields.Keys)
+                if (id == 0)
                 {
-                    fields[fieldName] = string.Empty;
+                    _dataBase.AddMember(member);
+                }
+                else
+                {
+                    _dataBase.EditMember(id, member);
                 }
                 _view.DisplayForm(fields);
-                _view.DisplayMessageUnderscore("Member saved successfully!");
+                _view.DisplayMessageUnderscore("Changes saved successfully!");
             }
             catch (Exception e)
             {
@@ -118,9 +81,9 @@ public class Controller
             _view.DisplayMessageUnderscore("Please fill out all fields before saving.");
         }
     }
-    private void AddMember(Type member)
-    {
-        Dictionary<string, string> fields = GetEmptyProrepties(member);
+    private void AddMember(Member member)
+    {//should be called method on instance, which collect properties with empty values(basically instance called with no argumnet constructor)
+        Dictionary<string, string> fields = member.GetPropertiesAndValues();
         _view.DisplayForm(fields);
         void addMenu()
         {
@@ -136,14 +99,15 @@ public class Controller
         }
         addMenu();
     }
-    private void AddRoledMember(){
+    private void AddRoledMember()
+    {
         Console.Clear();
         _view.DisplayMenu(_view.RoleMenu);
         switch (_input.GetMenuItem(_view.RoleMenu))
         {
-            case 1: AddMember(typeof(Teacher)); break;
-            case 2: AddMember(typeof(Student)); break;
-            case 3: AddMember(typeof(Member)); break;
+            case 1: AddMember(new Teacher()); break;
+            case 2: AddMember(new Student()); break;
+            case 3: AddMember(new Member()); break;
             case 9: Console.Clear(); MainMenu(); break;
             case 0: Exit(); break;
         }
@@ -156,20 +120,15 @@ public class Controller
         Console.WriteLine("[ID of the member you want to edit]");
         int id = _input.GetMenuItem(_dataBase.Members.Keys.ToList());
         Member member = _dataBase.GetMember(id);
-        Type memberType = member.GetType();
-        Dictionary<string, string> fields = new Dictionary<string, string>();
-        foreach (var property in memberType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
-        {
-            fields[property.Name] = property.GetValue(member)?.ToString() ?? string.Empty;
-        }
+        Dictionary<string, string> fields = member.GetPropertiesAndValues();
         _view.DisplayForm(fields);
-        
-        void editMenu(){
+        void editMenu()
+        {
             _view.DisplayMenu(_view.EditMenu);
             switch (_input.GetMenuItem(_view.EditMenu))
             {
                 case 1: EditField(fields); editMenu(); break;
-                case 2: SaveMember(fields, memberType, id); editMenu(); break;
+                case 2: SaveMember(fields, member, id); editMenu(); break;
                 case 9: Console.Clear(); MainMenu(); break;
                 case 0: Exit(); break;
             }
@@ -187,16 +146,21 @@ public class Controller
         bool confirmation = _input.GetYesNo();
         if (confirmation)
         {
-            try{
+            try
+            {
                 _dataBase.DeleteMember(id);
                 _dataBase.edited = true;
                 Console.Clear();
                 Console.WriteLine("Member deleted successfully!");
-            }catch(Exception e){
+            }
+            catch (Exception e)
+            {
                 Console.WriteLine(e.Message);
             }
-        }else {
-             Console.Clear();
+        }
+        else
+        {
+            Console.Clear();
             _view.DisplayMessageUnderscore("Member deletion cancelled.");
         }
     }
@@ -215,8 +179,9 @@ public class Controller
             Console.WriteLine("Data saved successfully!");
         }
     }
-    private void Exit(){
-        if(_dataBase.edited)
+    private void Exit()
+    {
+        if (_dataBase.edited)
         {
             Console.Write("Do you want to save changes before exiting");
             bool confirmation = _input.GetYesNo();

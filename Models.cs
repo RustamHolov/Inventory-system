@@ -1,3 +1,5 @@
+
+using System.Reflection;
 public class Member
 {
     private string _name;
@@ -45,6 +47,34 @@ public class Member
         _email = email;
         _phone = phone;
     }
+    public Member() : this("", "", "", "", "", "") { } //default constructor
+    public Dictionary<string, string> GetPropertiesAndValues()
+    {
+        Dictionary<string, string> fields = new Dictionary<string, string>();
+        PropertyInfo[] properties = GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
+        foreach (var property in properties)
+        {
+            fields.Add(property.Name, property.GetValue(this)?.ToString() ?? string.Empty);
+        }
+        return fields;
+    }
+    public void AssignValues(Dictionary<string, string> fields)
+    {
+        foreach (var kvp in fields)
+        {
+            string propertyName = kvp.Key;
+            string propertyValue = kvp.Value;
+            PropertyInfo? property = GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty);
+            if (property != null)
+            {
+                property.SetValue(this, propertyValue);
+            }
+            else
+            {
+                throw new Exception($"Property {propertyName} not found on type {GetType()}");
+            }
+        }
+    }
     public override string ToString()
     {
         return $"Role: {GetType().Name} Name: {Name} Surname: {Surname} Birth: {Birth} Sex: {Sex} Email: {Email} Phone: {Phone}";
@@ -64,6 +94,7 @@ public class Teacher : Member
     {
         _subject = subject;
     }
+    public Teacher() : this("", "", "", "", "", "", "") { } //default constructor
     public override string ToString()
     {
         return base.ToString() + $" Subject: {Subject} ";
@@ -89,7 +120,7 @@ public class Student : Member
         _course = course;
         _startDate = startDate;
     }
-
+    public Student() : this("", "", "", "", "", "", "", "") { } //default constructor
     public override string ToString()
     {
         return base.ToString() + $" Course: {Course} Start Date: {StartDate} ";
