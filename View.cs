@@ -4,6 +4,34 @@ using System.Reflection;
 
 public class View
 {
+    public Dictionary<int, string> Menu = new Dictionary<int, string>()
+    {
+        { 1, "Add a member" },
+        { 2, "Edit a member" },
+        { 3, "Delete a member" },
+        { 4, "Display all members" },
+        { 0, "Exit" }
+    };
+    public Dictionary<int, string> AddMenu = new Dictionary<int, string>(){
+        {1, "Start filling out the form"},
+        {2, "Edit Field"},
+        {3, "Save"},
+        {9, "Previous Menu"},
+        {0, "Exit"}
+    };
+    public Dictionary<int, string> RoleMenu = new Dictionary<int, string>(){
+        {1, "Teacher"},
+        {2, "Student"},
+        {3, "Unspecified"},
+        {9, "Previous Menu"},
+        {0, "Exit"}
+    };
+    public Dictionary<int, string> EditMenu = new Dictionary<int, string>(){
+        {1, "Edit Field"},
+        {2, "Save changes"},
+        {9, "Previous Menu"},
+        {0, "Exit"}
+    };
     public string InfoInFrame(string info)
     {                             //auto-adjustable one line frame
         int contentLength = info.Length + 2;        // +2 to include whitespaces both at start and end

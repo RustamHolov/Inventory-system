@@ -57,7 +57,7 @@ public class Input
     }
     public bool TryGetYesNo(out bool yesNo)
     {
-        Console.WriteLine(" yes/no (y/n): ");
+        Console.WriteLine(" yes/no (y/n)?: ");
         string input = GetProperInput().ToLower();
         if (input == "y" || input == "yes")
         {

@@ -12,39 +12,11 @@ public class Controller
         _input = input;
         _dataBase = dataBase;
     }
-    private Dictionary<int, string> Menu = new Dictionary<int, string>()
-    {
-        { 1, "Add a member" },
-        { 2, "Edit a member" },
-        { 3, "Delete a member" },
-        // { 4, "Display a single member" },
-        { 5, "Display all members" },
-        { 0, "Exit" }
-    };
-    private Dictionary<int, string> AddMenu = new Dictionary<int, string>(){
-        {1, "Start filling out the form"},
-        {2, "Edit Field"},
-        {3, "Save"},
-        {9, "Previous Menu"},
-        {0, "Exit"}
-    };
-    private Dictionary<int, string> RoleMenu = new Dictionary<int, string>(){
-        {1, "Teacher"},
-        {2, "Student"},
-        {3, "Unspecified"},
-        {9, "Previous Menu"},
-        {0, "Exit"}
-    };
-    public Dictionary<int, string> EditMenu = new Dictionary<int, string>(){
-        {1, "Edit Field"},
-        {2, "Save changes"},
-        {9, "Previous Menu"},
-        {0, "Exit"}
-    };
+    
     private Dictionary<string, string> GetProrepties(Type type)
     {
         Dictionary<string, string> fields = new Dictionary<string, string>();
-        PropertyInfo[] properties = type.GetProperties(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
+        PropertyInfo[] properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
         foreach (var property in properties)
         {
             fields.Add(property.Name, string.Empty);
@@ -151,8 +123,8 @@ public class Controller
         _view.DisplayForm(fields);
         void addMenu()
         {
-            _view.DisplayMenu(AddMenu);
-            switch (_input.GetMenuItem(AddMenu))
+            _view.DisplayMenu(_view.AddMenu);
+            switch (_input.GetMenuItem(_view.AddMenu))
             {
                 case 1: FillForm(fields); addMenu(); break;
                 case 2: EditField(fields); addMenu(); break;
@@ -165,8 +137,8 @@ public class Controller
     }
     private void AddRoledMember(){
         Console.Clear();
-        _view.DisplayMenu(RoleMenu);
-        switch (_input.GetMenuItem(RoleMenu))
+        _view.DisplayMenu(_view.RoleMenu);
+        switch (_input.GetMenuItem(_view.RoleMenu))
         {
             case 1: AddMember(typeof(Teacher)); break;
             case 2: AddMember(typeof(Student)); break;
@@ -175,10 +147,6 @@ public class Controller
             case 0: Environment.Exit(0); break;
         }
 
-    }
-    private void DisplaySingleMember()
-    {
-        throw new NotImplementedException();
     }
 
     private void EditMember()
@@ -196,8 +164,8 @@ public class Controller
         _view.DisplayForm(fields);
         
         void editMenu(){
-            _view.DisplayMenu(EditMenu);
-            switch (_input.GetMenuItem(EditMenu))
+            _view.DisplayMenu(_view.EditMenu);
+            switch (_input.GetMenuItem(_view.EditMenu))
             {
                 case 1: EditField(fields); editMenu(); break;
                 case 2: SaveMember(fields, memberType, id); editMenu(); break;
@@ -208,12 +176,13 @@ public class Controller
         editMenu();
     }
 
-    private void DeleteMember() //TODO Create the menu, input method for confirmation and display the member to be deleted
+    private void DeleteMember()
     {
         _view.DisplayMembers(_dataBase.Members);
         Console.WriteLine("[ID of the member you want to delete]");
         int id = _input.GetMenuItem(_dataBase.Members.Keys.ToList());
-        Console.Write($"Are you sure you want to delete [ID: {id}]?");
+        Console.Clear();
+        Console.WriteLine($"Are you sure you want to delete:\n[ID:{id} {_dataBase.GetMember(id)}]");
         bool confirmation = _input.GetYesNo();
         if (confirmation)
         {
@@ -238,19 +207,16 @@ public class Controller
     private void MainMenu()
     {
         _view.DisplayUndercsore();
-        _view.DisplayMenu(Menu);
-        switch (_input.GetMenuItem(Menu))
+        _view.DisplayMenu(_view.Menu);
+        switch (_input.GetMenuItem(_view.Menu))
         {
             case 1: AddRoledMember(); break;
             case 2: EditMember(); break;
             case 3: DeleteMember(); MainMenu(); break;
-            case 4: DisplaySingleMember(); MainMenu(); break;
-            case 5: DisplayMembers(); MainMenu(); break;
+            case 4: DisplayMembers(); MainMenu(); break;
             case 0: Environment.Exit(0); break;
         }
     }
-
-
 
     public void MainFlow()
     {

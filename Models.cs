@@ -47,7 +47,7 @@ public class Member
     }
     public override string ToString()
     {
-        return $"Name: {Name} Surname: {Surname} Birth: {Birth} Sex: {Sex} Email: {Email} Phone: {Phone} ";
+        return $"Role: {GetType().Name} Name: {Name} Surname: {Surname} Birth: {Birth} Sex: {Sex} Email: {Email} Phone: {Phone}";
     }
 }
 public class Teacher : Member
@@ -66,13 +66,12 @@ public class Teacher : Member
     }
     public override string ToString()
     {
-        return base.ToString() + $"Subject: {Subject} ";
+        return base.ToString() + $" Subject: {Subject} ";
     }
 }
 
 public class Student : Member
 {
-
     private string _course;
     private string _startDate;
     public string Course
@@ -93,6 +92,6 @@ public class Student : Member
 
     public override string ToString()
     {
-        return base.ToString() + $"Course: {Course} Start Date: {StartDate} ";
+        return base.ToString() + $" Course: {Course} Start Date: {StartDate} ";
     }
 }
