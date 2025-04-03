@@ -4,4 +4,3 @@ Id,Type,Name,Surname,Birth,Sex,Email,Phone,Subject,Course,StartDate
 3,Member,Emily,Wilson,22.11.2001,female,emily.w@example.org,555123456,,,
 4,Teacher,Sophia,Garcia,30.04.1992,female,sophia.g@domain.com,998877665,Math,,
 5,Student,Michael,Brown,18.07.1975,male,m.brown75@mail.co.uk,112233445,,C#,17.02.2024
-6,Student,Malika,KHOLOVA,06-May-08,FEMALE,malikaka@gmail.com,96672862,,Nps olol,04-Feb-25

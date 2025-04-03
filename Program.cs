@@ -4,8 +4,10 @@ class Program
 {
     static void Main(string[] args)
     {
+        View view = new View();
+        Input input = new Input();
         DataBase db = new DataBase();
-        Controller controller = new Controller(new View(), new Input(), db);
+        Controller controller = new Controller(view, input, db);
         // test group of members
         // db.AddMember(new Member("Jane", "Doe", "12.09.1996", "female", "l@l.com", "123456789"));
         // db.AddMember(new Member("John", "Smith", "05.03.1988", "male", "john.smith@email.net", "987654321"));

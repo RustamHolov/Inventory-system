@@ -1,22 +1,28 @@
+using System.Net.WebSockets;
+using System.Text;
 using System.Text.RegularExpressions;
 
 public class Input
 {
-    public string GetProperInput()
+    public string GetProperInput(bool readKey = true)
     {
-        string? userInput = Console.ReadLine();
-        return userInput switch
-        {
-            _ when userInput == null || userInput.Trim() == "" => throw new Exception("Empty input"),
-            _ => userInput.Trim()
-        };
+        if(readKey){
+            return GetKeyReading("*Or press ESC to go back*") ?? string.Empty;
+        }else{
+            string? userInput = Console.ReadLine();
+            return userInput switch
+            {
+                _ when userInput == null || userInput.Trim() == "" => throw new Exception("Empty input"),
+                _ => userInput.Trim()
+            };
+        }
     }
 
     #region "TryParsing-Methods"
     public bool TryGetMenuItem(Dictionary<int, string> menu, out int item)
     {
         Console.WriteLine("Select a menu item:");
-        if (int.TryParse(GetProperInput(), out int number) && menu.Keys.Any(n => n == number))
+        if (int.TryParse(GetProperInput(readKey: false), out int number) && menu.Keys.Any(n => n == number))
         {
             item = number;
             return true;
@@ -24,13 +30,13 @@ public class Input
         else
         {
             item = -1;
-            throw new Exception("Invalid number");
+            return false;
         }
     }
     public bool TryGetMenuItem(int range, out int item)
     {
         Console.WriteLine("Select an item:");
-        if (int.TryParse(GetProperInput(), out int number) && number > 0 && number <= range)
+        if (int.TryParse(GetProperInput(readKey: false), out int number) && number > 0 && number <= range)
         {
             item = number;
             return true;
@@ -38,13 +44,13 @@ public class Input
         else
         {
             item = -1;
-            throw new Exception("Invalid number");
+            return false;
         }
     }
     public bool TryGetMenuItem(List<int> list, out int item)
     {
         Console.WriteLine("Select an item:");
-        if (int.TryParse(GetProperInput(), out int number) && list.Contains(number))
+        if (int.TryParse(GetProperInput(readKey: false), out int number) && list.Contains(number))
         {
             item = number;
             return true;
@@ -52,27 +58,18 @@ public class Input
         else
         {
             item = -1;
-            throw new Exception("Invalid number");
+            return false;
         }
     }
-    public bool TryGetYesNo(out bool yesNo)
+    public bool TryGetConfirmation(out bool confirmation)
     {
-        Console.WriteLine(" yes/no (y/n)?: ");
+        Console.WriteLine(" Yes(y)/No(n) ?: ");
         string input = GetProperInput().ToLower();
-        if (input == "y" || input == "yes")
+        switch (input)
         {
-            yesNo = true;
-            return true;
-        }
-        else if (input == "n" || input == "no")
-        {
-            yesNo = false;
-            return true;
-        }
-        else
-        {
-            yesNo = false;
-            throw new Exception("Invalid input, try again");
+            case "y" or "yes": confirmation = true; return true;
+            case "n" or "no": confirmation = false; return true;
+            default: confirmation = false; return false;
         }
     }
 
@@ -87,7 +84,7 @@ public class Input
         else
         {
             startDate = new DateTime();
-            throw new Exception("Invalid date format");
+            return false;
         }
     }
     public bool TryGetTitle(out string name)
@@ -103,10 +100,11 @@ public class Input
         else
         {
             name = "";
-            throw new Exception("Invalid format, try again");
+            return false;
         }
     }
-    public bool TryGetCourse(out string course){
+    public bool TryGetCourse(out string course)
+    {
         Console.WriteLine("Enter your subject:");
         string courseRegex = @"^[\p{L}\p{N}\s\-_.,!@#$%^&*()+=`~\p{S}\p{P}]*$";
         string Course = GetProperInput();
@@ -134,7 +132,7 @@ public class Input
         else
         {
             email = "";
-            throw new Exception("Invalid format, try again");
+            return false;
         }
     }
     public bool TryGetPhone(out string phone)
@@ -150,7 +148,7 @@ public class Input
         else
         {
             phone = "";
-            throw new Exception("Invalid format, try again");
+            return false;
         }
     }
     public bool TryGetSex(out string sex)
@@ -166,7 +164,7 @@ public class Input
         else
         {
             sex = "";
-            throw new Exception("Invalid format, try again");
+            return false;
         }
     }
     public bool TryGetAge(out int age)
@@ -180,154 +178,180 @@ public class Input
         else
         {
             age = -1;
-            throw new Exception("Invalid format, try again");
+            return false;
         }
     }
+    
 
     #endregion
     #region "Recursive Get-Methods"
     public int GetMenuItem(Dictionary<int, string> menu)
     {
-        try
+        if(TryGetMenuItem(menu, out int item))
         {
-            TryGetMenuItem(menu, out int item);
             return item;
         }
-        catch (Exception e)
+        else
         {
-            Console.WriteLine(e.Message);
+            Console.WriteLine("Invalid number");
             return GetMenuItem(menu);
         }
     }
     public int GetMenuItem(int range)
     {
-        try
+        if (TryGetMenuItem(range, out int item))
         {
-            TryGetMenuItem(range, out int item);
             return item;
         }
-        catch (Exception e)
+        else
         {
-            Console.WriteLine(e.Message);
+            Console.WriteLine("Invalid number");
             return GetMenuItem(range);
         }
     }
     public int GetMenuItem(List<int> list)
     {
-        try
+        if (TryGetMenuItem(list, out int item))
         {
-            TryGetMenuItem(list, out int item);
             return item;
         }
-        catch (Exception e)
+        else
         {
-            Console.WriteLine(e.Message);
+            Console.WriteLine("Invalid number");
             return GetMenuItem(list);
         }
     }
     public DateTime GetStartDate()
     {
-        try
+        if(TryGetStartDate(out DateTime startDate))
         {
-            TryGetStartDate(out DateTime startDate);
             return startDate;
         }
-        catch (Exception e)
+        else
         {
-            Console.WriteLine(e.Message);
+            Console.WriteLine("Invalid date format");
             return GetStartDate();
         }
     }
     public string GetTitle()
     {
-        try
+        if(TryGetTitle(out string name))
         {
-            TryGetTitle(out string name);
             return name;
         }
-        catch (Exception e)
+        else
         {
-            Console.WriteLine(e.Message);
+            Console.WriteLine("Invalid format, try again");
             return GetTitle();
         }
     }
     public string GetEmail()
     {
-        try
+        if(TryGetEmail(out string email))
         {
-            TryGetEmail(out string email);
             return email;
         }
-        catch (Exception e)
+        else
         {
-            Console.WriteLine(e.Message);
+            Console.WriteLine("Invalid Email");
             return GetEmail();
         }
     }
     public string GetPhone()
     {
-        try
+        if(TryGetPhone(out string phone))
         {
-            TryGetPhone(out string phone);
             return phone;
         }
-        catch (Exception e)
+        else
         {
-            Console.WriteLine(e.Message);
+            Console.WriteLine("Invalid Phone");
             return GetPhone();
         }
     }
-    public int GetAge()
+    public int GetBirth()
     {
-        try
+        if(TryGetAge(out int age))
         {
-            TryGetAge(out int age);
             return age;
         }
-        catch (Exception e)
+        else
         {
-            Console.WriteLine(e.Message);
-            return GetAge();
+            Console.WriteLine("Invalid Date");
+            return GetBirth();
         }
     }
     public string GetCourse()
     {
-        try
+        if(TryGetCourse(out string course))
         {
-            TryGetCourse(out string course);
             return course;
         }
-        catch (Exception e)
+        else
         {
-            Console.WriteLine(e.Message);
+            Console.WriteLine("Invalid Course");
             return GetCourse();
         }
     }
     public string GetSex()
     {
-        try
+        if(TryGetSex(out string sex))
         {
-            TryGetSex(out string male);
-            return male;
+            return sex;
         }
-        catch (Exception e)
+        else
         {
-            Console.WriteLine(e.Message);
+            Console.WriteLine("Invalid sex");
             return GetSex();
         }
     }
-    public bool GetYesNo()
+    public bool GetConfirmation()
     {
-        try
-        {
-            TryGetYesNo(out bool yesNo);
+        if(TryGetConfirmation(out bool yesNo)){
             return yesNo;
         }
-        catch (Exception e)
+        else
         {
-            Console.WriteLine(e.Message);
-            return GetYesNo();
+            Console.WriteLine("Invalid input");
+            return GetConfirmation();
         }
     }
     #endregion
+    public string? GetKeyReading(string prompt)
+    {
+        Console.WriteLine(prompt);
+        StringBuilder input = new StringBuilder();
+        ConsoleKeyInfo key;
+
+        while (true)
+        {
+            key = Console.ReadKey(true); 
+
+            if (key.Key == ConsoleKey.Enter)
+            {
+                Console.WriteLine(); 
+                return input.ToString().Trim();
+            }
+            else if (key.Key == ConsoleKey.Escape)
+            {
+                Console.WriteLine(); 
+                return null; 
+            }
+            else if (key.Key == ConsoleKey.Backspace && input.Length > 0)
+            {
+                input.Remove(input.Length - 1, 1);
+                Console.Write("\b \b"); 
+            }
+            else if (!char.IsControl(key.KeyChar))
+            {
+                input.Append(key.KeyChar);
+                Console.Write(key.KeyChar);
+            }
+        }
+    }
+    public class EcsException : Exception
+    {
+        public EcsException() : base() { }
+        public EcsException(string message) : base(message) { }
+    }
 }

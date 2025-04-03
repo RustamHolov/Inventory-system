@@ -1,9 +1,9 @@
-using System.Reflection;
 public class DataBase{
     private Dictionary<int, Member> _members { get; set; } = new Dictionary<int, Member>();
     private int _nexID = 1;
     public bool edited = false;
     private string _csvPath = "membersDB.csv";
+    private string _titles = "Id,Type,Name,Surname,Birth,Sex,Email,Phone,Subject,Course,StartDate";
     public bool AddMember(Member member){
         if (!_members.ContainsValue(member)){
             _members.Add(_nexID, member);
@@ -93,7 +93,7 @@ public class DataBase{
     public void SaveToCSV(){
         try{
             using (StreamWriter sw = new StreamWriter(_csvPath)){
-                sw.WriteLine("Id,Type,Name,Surname,Birth,Sex,Email,Phone,Subject,Course,StartDate");
+                sw.WriteLine(_titles);
                 foreach (var memberPair in _members){
                     var member = memberPair.Value;
                     string type = member.GetType().Name;

@@ -17,17 +17,28 @@ public class Controller
     {
         Console.Clear();
         _view.DisplayForm(fields, fieldName);
-        switch (fieldName)
+        if (fields.ContainsKey(fieldName))
         {
-            case "Name": fields["Name"] = _input.GetTitle(); break;
-            case "Surname": fields["Surname"] = _input.GetTitle(); break;
-            case "Birth": fields["Birth"] = _input.GetStartDate().ToString("d"); break;
-            case "Sex": fields["Sex"] = _input.GetSex(); break;
-            case "Email": fields["Email"] = _input.GetEmail(); break;
-            case "Phone": fields["Phone"] = _input.GetPhone(); break;
-            case "Subject": fields["Subject"] = _input.GetCourse(); break;
-            case "Course": fields["Course"] = _input.GetCourse(); break;
-            case "StartDate": fields["StartDate"] = _input.GetStartDate().ToString("d"); break;
+            bool success = false;
+            string? newValue = null; // Default to null for safety
+            switch (fieldName)
+            {
+                case "Name":
+                case "Surname": success = _input.TryGetTitle(out newValue);break;
+                case "Sex": success = _input.TryGetSex(out newValue);break;
+                case "Email":success = _input.TryGetEmail(out newValue);break;
+                case "Phone":success = _input.TryGetPhone(out newValue);break;
+                case "Subject":
+                case "Course":success = _input.TryGetCourse(out newValue);break;
+                case "Birth":
+                case "StartDate":DateTime dateValue; success = _input.TryGetStartDate(out dateValue);if(success) newValue = dateValue.ToString("d");break;
+                default:Console.WriteLine($"Warning: Unknown field '{fieldName}'. No input taken.");break;
+            }
+            if (success && newValue!=null) fields[fieldName] = newValue;
+        }
+        else
+        {
+            Console.WriteLine($"Error: Field '{fieldName}' not found in fields dictionary.");
         }
         _dataBase.edited = true;
     }
@@ -143,7 +154,7 @@ public class Controller
         int id = _input.GetMenuItem(_dataBase.Members.Keys.ToList());
         Console.Clear();
         Console.WriteLine($"Are you sure you want to delete:\n[ID:{id} {_dataBase.GetMember(id)}]");
-        bool confirmation = _input.GetYesNo();
+        bool confirmation = _input.GetConfirmation();
         if (confirmation)
         {
             try
@@ -184,7 +195,7 @@ public class Controller
         if (_dataBase.edited)
         {
             Console.Write("Do you want to save changes before exiting");
-            bool confirmation = _input.GetYesNo();
+            bool confirmation = _input.GetConfirmation();
             if (confirmation)
             {
                 SaveDataBase();
