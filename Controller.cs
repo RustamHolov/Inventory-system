@@ -21,14 +21,14 @@ public class Controller
             switch (fieldName)
             {
                 case "Name":
-                case "Surname": newValue = _input.GetTitle();break;
-                case "Sex": newValue = _input.GetSex();break;
-                case "Email": newValue = _input.GetEmail();break;
-                case "Phone": newValue = _input.GetPhone();break;
+                case "Surname": try{newValue = _input.GetTitle();break;}catch{break;}
+                case "Sex": try{newValue = _input.GetSex();break;} catch { break; }
+                case "Email": try{newValue = _input.GetEmail();break;} catch { break; }
+                case "Phone": try{newValue = _input.GetPhone();break;} catch { break; }
                 case "Subject":
-                case "Course": newValue = _input.GetCourse();break;
+                case "Course": try{newValue = _input.GetCourse();break;} catch { break; }
                 case "Birth":
-                case "StartDate":DateTime dateValue; dateValue = _input.GetStartDate();newValue = dateValue.ToString("d");break;
+                case "StartDate":try{DateTime dateValue; dateValue = _input.GetStartDate();newValue = dateValue.ToString("d");break;} catch { break; }
                 default:Console.WriteLine($"Warning: Unknown field '{fieldName}'. No input taken.");break;
             }
             if ( newValue!=null) fields[fieldName] = newValue;

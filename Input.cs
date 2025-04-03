@@ -3,15 +3,15 @@ using System.Text.RegularExpressions;
 
 public class Input
 {
-    public string GetProperInput(bool readKey = false)
+    public string GetProperInput(bool readKey = true)
     {
         if(readKey){
-            return GetKeyReading("") ?? string.Empty;
+            return GetKeyReading("*Or press ESC to go back*") ?? throw new ArgumentException();
         }else{
             string? userInput = Console.ReadLine();
             return userInput switch
             {
-                _ when userInput == null || userInput.Trim() == "" => throw new Exception("Empty input"),
+                _ when userInput == null || userInput.Trim() == "" => throw new Exception(),
                 _ => userInput.Trim()
             };
         }
@@ -21,7 +21,7 @@ public class Input
     public bool TryGetMenuItem(Dictionary<int, string> menu, out int item)
     {
         Console.WriteLine("Select a menu item:");
-        if (int.TryParse(GetProperInput(), out int number) && menu.Keys.Any(n => n == number))
+        if (int.TryParse(GetProperInput(false), out int number) && menu.Keys.Any(n => n == number))
         {
             item = number;
             return true;
@@ -35,7 +35,7 @@ public class Input
     public bool TryGetMenuItem(int range, out int item)
     {
         Console.WriteLine("Select an item:");
-        if (int.TryParse(GetProperInput(), out int number) && number > 0 && number <= range)
+        if (int.TryParse(GetProperInput(false), out int number) && number > 0 && number <= range)
         {
             item = number;
             return true;
@@ -49,7 +49,7 @@ public class Input
     public bool TryGetMenuItem(List<int> list, out int item)
     {
         Console.WriteLine("Select an item:");
-        if (int.TryParse(GetProperInput(), out int number) && list.Contains(number))
+        if (int.TryParse(GetProperInput(false), out int number) && list.Contains(number))
         {
             item = number;
             return true;
@@ -186,37 +186,58 @@ public class Input
     #region "Recursive Get-Methods"
     public int GetMenuItem(Dictionary<int, string> menu)
     {
-        if(TryGetMenuItem(menu, out int item))
-        {
-            return item;
-        }
-        else
-        {
-            Console.WriteLine("Invalid number");
+        try{
+            if (TryGetMenuItem(menu, out int item))
+            {
+                return item;
+            }
+            else
+            {
+                Console.WriteLine("Invalid number");
+                return GetMenuItem(menu);
+            }
+        }catch (Exception e){
+            Console.WriteLine(e.Message);
             return GetMenuItem(menu);
         }
     }
     public int GetMenuItem(int range)
     {
-        if (TryGetMenuItem(range, out int item))
+        try
         {
-            return item;
+            if (TryGetMenuItem(range, out int item))
+            {
+                return item;
+            }
+            else
+            {
+                Console.WriteLine("Invalid number");
+                return GetMenuItem(range);
+            }
         }
-        else
+        catch (Exception e)
         {
-            Console.WriteLine("Invalid number");
+            Console.WriteLine(e.Message);
             return GetMenuItem(range);
         }
     }
     public int GetMenuItem(List<int> list)
     {
-        if (TryGetMenuItem(list, out int item))
+        try
         {
-            return item;
+            if (TryGetMenuItem(list, out int item))
+            {
+                return item;
+            }
+            else
+            {
+                Console.WriteLine("Invalid number");
+                return GetMenuItem(list);
+            }
         }
-        else
+        catch (Exception e)
         {
-            Console.WriteLine("Invalid number");
+            Console.WriteLine(e.Message);
             return GetMenuItem(list);
         }
     }
@@ -306,19 +327,25 @@ public class Input
     }
     public bool GetConfirmation()
     {
-        if(TryGetConfirmation(out bool yesNo)){
-            return yesNo;
-        }
-        else
-        {
-            Console.WriteLine("Invalid input");
+        try{
+            if (TryGetConfirmation(out bool yesNo))
+            {
+                return yesNo;
+            }
+            else
+            {
+                Console.WriteLine("Invalid input");
+                return GetConfirmation();
+            }
+        }catch (Exception e){
+            Console.WriteLine(e.Message);
             return GetConfirmation();
         }
     }
     #endregion
     public string? GetKeyReading(string prompt)
     {
-        Console.Write(prompt);
+        Console.WriteLine(prompt);
         StringBuilder input = new StringBuilder();
         ConsoleKeyInfo key;
 
