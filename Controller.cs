@@ -14,27 +14,26 @@ public class Controller
     }
 
     private void GetAndSetFields(Dictionary<string, string> fields, string fieldName)
-    {
+    { 
         Console.Clear();
         _view.DisplayForm(fields, fieldName);
         if (fields.ContainsKey(fieldName))
         {
-            bool success = false;
             string? newValue = null; // Default to null for safety
             switch (fieldName)
             {
                 case "Name":
-                case "Surname": success = _input.TryGetTitle(out newValue);break;
-                case "Sex": success = _input.TryGetSex(out newValue);break;
-                case "Email":success = _input.TryGetEmail(out newValue);break;
-                case "Phone":success = _input.TryGetPhone(out newValue);break;
+                case "Surname": newValue = _input.GetTitle();break;
+                case "Sex": newValue = _input.GetSex();break;
+                case "Email": newValue = _input.GetEmail();break;
+                case "Phone": newValue = _input.GetPhone();break;
                 case "Subject":
-                case "Course":success = _input.TryGetCourse(out newValue);break;
+                case "Course": newValue = _input.GetCourse();break;
                 case "Birth":
-                case "StartDate":DateTime dateValue; success = _input.TryGetStartDate(out dateValue);if(success) newValue = dateValue.ToString("d");break;
+                case "StartDate":DateTime dateValue; dateValue = _input.GetStartDate();newValue = dateValue.ToString("d");break;
                 default:Console.WriteLine($"Warning: Unknown field '{fieldName}'. No input taken.");break;
             }
-            if (success && newValue!=null) fields[fieldName] = newValue;
+            if ( newValue!=null) fields[fieldName] = newValue;
         }
         else
         {
@@ -179,6 +178,7 @@ public class Controller
     {
         Console.Clear();
         _view.DisplayMembers(_dataBase.Members);
+        _view.Menu.Add(6, "Hide members");
     }
     private void SaveDataBase()
     {
@@ -214,6 +214,7 @@ public class Controller
             case 3: DeleteMember(); MainMenu(); break;
             case 4: DisplayMembers(); MainMenu(); break;
             case 5: SaveDataBase(); MainMenu(); break;
+            case 6: Console.Clear(); _view.Menu.Remove(6); MainMenu(); break;
             case 0: Exit(); break;
         }
     }

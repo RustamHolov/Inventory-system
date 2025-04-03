@@ -4,10 +4,10 @@ using System.Text.RegularExpressions;
 
 public class Input
 {
-    public string GetProperInput(bool readKey = true)
+    public string GetProperInput(bool readKey = false)
     {
         if(readKey){
-            return GetKeyReading("*Or press ESC to go back*") ?? string.Empty;
+            return GetKeyReading("") ?? string.Empty;
         }else{
             string? userInput = Console.ReadLine();
             return userInput switch
@@ -22,7 +22,7 @@ public class Input
     public bool TryGetMenuItem(Dictionary<int, string> menu, out int item)
     {
         Console.WriteLine("Select a menu item:");
-        if (int.TryParse(GetProperInput(readKey: false), out int number) && menu.Keys.Any(n => n == number))
+        if (int.TryParse(GetProperInput(), out int number) && menu.Keys.Any(n => n == number))
         {
             item = number;
             return true;
@@ -36,7 +36,7 @@ public class Input
     public bool TryGetMenuItem(int range, out int item)
     {
         Console.WriteLine("Select an item:");
-        if (int.TryParse(GetProperInput(readKey: false), out int number) && number > 0 && number <= range)
+        if (int.TryParse(GetProperInput(), out int number) && number > 0 && number <= range)
         {
             item = number;
             return true;
@@ -50,7 +50,7 @@ public class Input
     public bool TryGetMenuItem(List<int> list, out int item)
     {
         Console.WriteLine("Select an item:");
-        if (int.TryParse(GetProperInput(readKey: false), out int number) && list.Contains(number))
+        if (int.TryParse(GetProperInput(), out int number) && list.Contains(number))
         {
             item = number;
             return true;
@@ -319,7 +319,7 @@ public class Input
     #endregion
     public string? GetKeyReading(string prompt)
     {
-        Console.WriteLine(prompt);
+        Console.Write(prompt);
         StringBuilder input = new StringBuilder();
         ConsoleKeyInfo key;
 
