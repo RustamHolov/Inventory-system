@@ -1,5 +1,3 @@
-using System;
-using System.Reflection;
 public class Controller
 {
     private readonly View _view;
@@ -178,7 +176,6 @@ public class Controller
     {
         Console.Clear();
         _view.DisplayMembers(_dataBase.Members);
-        _view.Menu.Add(6, "Hide members");
     }
     private void SaveDataBase()
     {
@@ -214,7 +211,6 @@ public class Controller
             case 3: DeleteMember(); MainMenu(); break;
             case 4: DisplayMembers(); MainMenu(); break;
             case 5: SaveDataBase(); MainMenu(); break;
-            case 6: Console.Clear(); _view.Menu.Remove(6); MainMenu(); break;
             case 0: Exit(); break;
         }
     }

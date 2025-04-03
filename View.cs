@@ -1,7 +1,3 @@
-using System.Text;
-using System;
-using System.Reflection;
-
 public class View
 {
     public Dictionary<int, string> Menu = new Dictionary<int, string>()
