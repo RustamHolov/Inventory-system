@@ -1,5 +1,5 @@
 Id,Type,Name,Surname,Birth,Sex,Email,Phone,Subject,Course,StartDate
-1,Member,Jane,Doe,12.09.1996,female,l@l.com,123456789,,,
+1,Member,Jane,Dao,12.09.1996,female,l@l.com,123456789,,,
 2,Member,John,Smith,05.03.1988,male,john.smith@email.net,987654321,,,
 3,Member,EmilyS,Wilson,22.11.2001,Other,emily.w@example.org,555123456,,,
 4,Teacher,Sophia,Garcia,30.04.1992,female,sophia.g@domain.com,998877665,Math,,

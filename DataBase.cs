@@ -70,7 +70,7 @@ public class DataBase{
                     string[] values = line.Split(',');
                     if(titles.Length != values.Length) throw new Exception("Something went wrong with tables");
                     Dictionary<string, string> table = titles.Zip(values, (k, v) => new { Key = k, Value = v })
-                   .ToDictionary(x => x.Key, x => x.Value);
+                   .ToDictionary(x => x.Key, x => x.Value);           //make a Dict by LINQ and lambdas from titles and values
                     if (int.TryParse(values[0], out int id)){
                         Member member = values[1] switch
                         {

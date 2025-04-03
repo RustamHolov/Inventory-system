@@ -8,9 +8,7 @@ public class Input
     private const string _courseRegex = @"^[\p{L}\p{N}\s\-_.,!@#$%^&*()+=`~\p{S}\p{P}]*$";
     private const string _emailRegex = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
     private const string _phoneRegex = @"^\+?[0-9]{1,3}[-. ]?\(?[0-9]{1,4}?\)?[-. ]?[0-9]{1,4}[-. ]?[0-9]{1,9}$";
-    private const string _sexRegex = @"^(?:Male|Female|Other)$";
-
-
+    private const string _sexRegex = @"^(?:[Mm]ale|[Ff]emale|[Oo]ther)$";
 
     #endregion
     public string GetProperInput(bool readKey = true)
@@ -90,6 +88,7 @@ public class Input
     }
     #endregion
     #region "Recursive Get-Methods"
+
     public int GetMenuItem(List<int> list)
     {
         try
@@ -112,7 +111,21 @@ public class Input
     }
     public int GetMenuItem(Dictionary<int, string> menu) => GetMenuItem(menu.Keys.ToList());
     public int GetMenuItem(int range) => GetMenuItem(Enumerable.Range(1, range).ToList());
+    public bool GetConfirmation()
+    {
+        if (TryGetConfirmation(out bool yesNo))
+        {
+            return yesNo;
+        }
+        else
+        {
+            Console.WriteLine("Invalid input");
+            return GetConfirmation();
+        }
+    }
+    #region Properties
     public delegate bool TryParseDateDelegate(out DateTime date, string prompt);
+    public delegate bool TryParseStringDelegate(out string value, string prompt, string regex);
     public string GetDate(string prompt, TryParseDateDelegate parser)
     {
         if (parser(out DateTime startDate, prompt))
@@ -127,8 +140,8 @@ public class Input
     }
     public string GetStartDate() => GetDate("start date", TryGetDate);
     public string GetBirth() => GetDate("birth date", TryGetDate);
-    public delegate bool TryParseDelegate(out string value, string prompt, string regex);
-    public string GetInput(TryParseDelegate parser, string prompt, string regex)
+    
+    public string GetInput(TryParseStringDelegate parser, string prompt, string regex)
     { 
         if (parser(out string value,prompt, regex))
         {
@@ -140,33 +153,15 @@ public class Input
             return GetInput(parser, prompt, regex);
         }
     }
-    public string GetEmail() => GetInput(TryGetTitle,"email",_emailRegex);
-    public string GetPhone() => GetInput(TryGetTitle,"phone",_phoneRegex);
-    public string GetCourse() => GetInput(TryGetTitle,"course",_courseRegex);
-    public string GetSex() => GetInput(TryGetTitle,"sex",_sexRegex);
-    public string GetName() => GetInput(TryGetTitle, "name", _nameRegex);
-    public string GetSurname() => GetInput(TryGetTitle, "surname", _nameRegex);
-    public string GetSubject() => GetInput(TryGetTitle,"subject",_courseRegex);
-    public bool GetConfirmation()
-    {
-        try
-        {
-            if (TryGetConfirmation(out bool yesNo))
-            {
-                return yesNo;
-            }
-            else
-            {
-                Console.WriteLine("Invalid input");
-                return GetConfirmation();
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            return GetConfirmation();
-        }
-    }
+    public string GetInput(string prompt, string regex) => GetInput(TryGetTitle, prompt, regex);
+    public string GetEmail() => GetInput("email",_emailRegex);
+    public string GetPhone() => GetInput("phone",_phoneRegex);
+    public string GetCourse() => GetInput("course",_courseRegex);
+    public string GetSex() => GetInput("sex",_sexRegex);
+    public string GetName() => GetInput("name", _nameRegex);
+    public string GetSurname() => GetInput("surname", _nameRegex);
+    public string GetSubject() => GetInput("subject",_courseRegex);
+    #endregion
     #endregion
     public string? GetKeyReading(string prompt)
     {
@@ -186,7 +181,7 @@ public class Input
             else if (key.Key == ConsoleKey.Escape)
             {
                 Console.WriteLine();
-                return null;
+                return null; //return null to make ?? syntax work
             }
             else if (key.Key == ConsoleKey.Backspace && input.Length > 0)
             {

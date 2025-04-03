@@ -10,28 +10,31 @@ public class Controller
         _input = input;
         _dataBase = dataBase;
     }
-
     private void GetAndSetFields(Dictionary<string, string> fields, string fieldName)
     {
         Console.Clear();
         _view.DisplayForm(fields, fieldName);
         if (fields.ContainsKey(fieldName))
         {
-            string? newValue = null; // Default to null for safety
-            switch (fieldName)
+            string? newValue = null;
+            try
             {
-                case "Name": try { newValue = _input.GetName(); break; } catch { break; }
-                case "Surname": try { newValue = _input.GetSurname(); break; } catch { break; }
-                case "Sex": try { newValue = _input.GetSex(); break; } catch { break; }
-                case "Email": try { newValue = _input.GetEmail(); break; } catch { break; }
-                case "Phone": try { newValue = _input.GetPhone(); break; } catch { break; }
-                case "Subject": try { newValue = _input.GetSubject(); break; } catch { break; }
-                case "Course": try { newValue = _input.GetCourse(); break; } catch { break; }
-                case "Birth": try { newValue = _input.GetBirth(); break; } catch { break; }
-                case "StartDate": try { newValue = _input.GetStartDate(); break; } catch { break; }
-                default: Console.WriteLine($"Warning: Unknown field '{fieldName}'. No input taken."); break;
-            }
-            if (newValue != null) fields[fieldName] = newValue;
+                newValue = fieldName switch
+                {
+                    "Name" => _input.GetName(),
+                    "Surname" => _input.GetSurname(),
+                    "Sex" => _input.GetSex(),
+                    "Email" => _input.GetEmail(),
+                    "Phone" => _input.GetPhone(),
+                    "Subject" => _input.GetSubject(),
+                    "Course" => _input.GetCourse(),
+                    "Birth" => _input.GetBirth(),
+                    "StartDate" => _input.GetStartDate(),
+                    _ => throw new Exception($"Warning: Unknown field '{fieldName}'. No input taken.")
+                };
+            } catch { } // Make ESC button work
+
+            if (newValue != null) fields[fieldName] = newValue; // Default to null for safety
         }
         else
         {
@@ -151,25 +154,30 @@ public class Controller
         int id = _input.GetMenuItem(_dataBase.Members.Keys.ToList());
         Console.Clear();
         Console.WriteLine($"Are you sure you want to delete:\n[ID:{id} {_dataBase.GetMember(id)}]");
-        bool confirmation = _input.GetConfirmation();
-        if (confirmation)
-        {
-            try
+        try{
+            bool confirmation = _input.GetConfirmation();
+            if (confirmation)
             {
-                _dataBase.DeleteMember(id);
-                _dataBase.edited = true;
+                try
+                {
+                    _dataBase.DeleteMember(id);
+                    _dataBase.edited = true;
+                    Console.Clear();
+                    Console.WriteLine("Member deleted successfully!");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+            else
+            {
                 Console.Clear();
-                Console.WriteLine("Member deleted successfully!");
+                _view.DisplayMessageUnderscore("Member deletion cancelled.");
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-        }
-        else
-        {
+        }catch{
             Console.Clear();
-            _view.DisplayMessageUnderscore("Member deletion cancelled.");
+            DeleteMember();
         }
     }
     private void DisplayMembers()
@@ -189,16 +197,21 @@ public class Controller
     }
     private void Exit()
     {
-        if (_dataBase.edited)
-        {
-            Console.Write("Do you want to save changes before exiting");
-            bool confirmation = _input.GetConfirmation();
-            if (confirmation)
+            if (_dataBase.edited)
             {
-                SaveDataBase();
+                Console.Write("Do you want to save changes before exiting");
+                try{
+                    bool confirmation = _input.GetConfirmation();
+                    if (confirmation)
+                    {
+                        SaveDataBase();
+                    }
+                }catch (Exception){
+                    Console.Clear();
+                    MainMenu();
+                }
             }
-        }
-        Environment.Exit(0);
+            Environment.Exit(0);
     }
     private void MainMenu()
     {

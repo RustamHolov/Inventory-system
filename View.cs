@@ -53,7 +53,7 @@ public class View
         }
         Console.WriteLine("─────────────────────────────");
     }
-    public void DisplayMembers(Dictionary<int, Member> members, string[] flags) { } //TODO implement sorted display
+    public void DisplayMembers(Dictionary<int, Member> members, string[] flags) { } //TODO implement sorting
     public void DisplayMembers(Dictionary<int, Member> members)
     {
         Console.Clear();
