@@ -12,7 +12,7 @@ public class Controller
     }
 
     private void GetAndSetFields(Dictionary<string, string> fields, string fieldName)
-    { 
+    {
         Console.Clear();
         _view.DisplayForm(fields, fieldName);
         if (fields.ContainsKey(fieldName))
@@ -20,18 +20,18 @@ public class Controller
             string? newValue = null; // Default to null for safety
             switch (fieldName)
             {
-                case "Name":
-                case "Surname": try{newValue = _input.GetTitle();break;}catch{break;}
-                case "Sex": try{newValue = _input.GetSex();break;} catch { break; }
-                case "Email": try{newValue = _input.GetEmail();break;} catch { break; }
-                case "Phone": try{newValue = _input.GetPhone();break;} catch { break; }
-                case "Subject":
-                case "Course": try{newValue = _input.GetCourse();break;} catch { break; }
-                case "Birth":
-                case "StartDate":try{DateTime dateValue; dateValue = _input.GetStartDate();newValue = dateValue.ToString("d");break;} catch { break; }
-                default:Console.WriteLine($"Warning: Unknown field '{fieldName}'. No input taken.");break;
+                case "Name": try { newValue = _input.GetName(); break; } catch { break; }
+                case "Surname": try { newValue = _input.GetSurname(); break; } catch { break; }
+                case "Sex": try { newValue = _input.GetSex(); break; } catch { break; }
+                case "Email": try { newValue = _input.GetEmail(); break; } catch { break; }
+                case "Phone": try { newValue = _input.GetPhone(); break; } catch { break; }
+                case "Subject": try { newValue = _input.GetSubject(); break; } catch { break; }
+                case "Course": try { newValue = _input.GetCourse(); break; } catch { break; }
+                case "Birth": try { newValue = _input.GetBirth(); break; } catch { break; }
+                case "StartDate": try { newValue = _input.GetStartDate(); break; } catch { break; }
+                default: Console.WriteLine($"Warning: Unknown field '{fieldName}'. No input taken."); break;
             }
-            if ( newValue!=null) fields[fieldName] = newValue;
+            if (newValue != null) fields[fieldName] = newValue;
         }
         else
         {

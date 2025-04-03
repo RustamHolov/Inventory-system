@@ -3,52 +3,38 @@ using System.Text.RegularExpressions;
 
 public class Input
 {
+    #region Regex's
+    private const string _nameRegex = @"^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$";
+    private const string _courseRegex = @"^[\p{L}\p{N}\s\-_.,!@#$%^&*()+=`~\p{S}\p{P}]*$";
+    private const string _emailRegex = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+    private const string _phoneRegex = @"^\+?[0-9]{1,3}[-. ]?\(?[0-9]{1,4}?\)?[-. ]?[0-9]{1,4}[-. ]?[0-9]{1,9}$";
+    private const string _sexRegex = @"^(?:Male|Female|Other)$";
+
+
+
+    #endregion
     public string GetProperInput(bool readKey = true)
     {
-        if(readKey){
-            return GetKeyReading("*Or press ESC to go back*") ?? throw new ArgumentException();
-        }else{
+        if (readKey)
+        {
+            return GetKeyReading("*OR press ESC to go back*") ?? throw new EcsException();
+        }
+        else
+        {
             string? userInput = Console.ReadLine();
-            return userInput switch
-            {
-                _ when userInput == null || userInput.Trim() == "" => throw new Exception(),
-                _ => userInput.Trim()
-            };
+            if (!string.IsNullOrEmpty(userInput)){
+                return userInput.Trim();
+            }else{
+                return string.Empty;
+            }
         }
     }
 
     #region "TryParsing-Methods"
-    public bool TryGetMenuItem(Dictionary<int, string> menu, out int item)
-    {
-        Console.WriteLine("Select a menu item:");
-        if (int.TryParse(GetProperInput(false), out int number) && menu.Keys.Any(n => n == number))
-        {
-            item = number;
-            return true;
-        }
-        else
-        {
-            item = -1;
-            return false;
-        }
-    }
-    public bool TryGetMenuItem(int range, out int item)
-    {
-        Console.WriteLine("Select an item:");
-        if (int.TryParse(GetProperInput(false), out int number) && number > 0 && number <= range)
-        {
-            item = number;
-            return true;
-        }
-        else
-        {
-            item = -1;
-            return false;
-        }
-    }
+
     public bool TryGetMenuItem(List<int> list, out int item)
     {
-        Console.WriteLine("Select an item:");
+        Console.WriteLine("Select a menu item:");
         if (int.TryParse(GetProperInput(false), out int number) && list.Contains(number))
         {
             item = number;
@@ -72,9 +58,9 @@ public class Input
         }
     }
 
-    public bool TryGetStartDate(out DateTime startDate)
+    public bool TryGetDate(out DateTime startDate, string prompt)
     {
-        Console.WriteLine("Enter the date:");
+        Console.WriteLine($"Enter the {prompt}:");
         if (DateTime.TryParse(GetProperInput(), out DateTime result))
         {
             startDate = result;
@@ -86,12 +72,12 @@ public class Input
             return false;
         }
     }
-    public bool TryGetTitle(out string name)
+
+    public bool TryGetTitle(out string name, string prompt, string regex)
     {
-        Console.WriteLine("Enter the title:");
-        string nameRegex = @"^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$";
+        Console.WriteLine($"Enter the {prompt}:");
         string Name = GetProperInput();
-        if (Regex.IsMatch(Name, nameRegex))
+        if (Regex.IsMatch(Name, regex))
         {
             name = Name;
             return true;
@@ -102,125 +88,8 @@ public class Input
             return false;
         }
     }
-    public bool TryGetCourse(out string course)
-    {
-        Console.WriteLine("Enter your subject:");
-        string courseRegex = @"^[\p{L}\p{N}\s\-_.,!@#$%^&*()+=`~\p{S}\p{P}]*$";
-        string Course = GetProperInput();
-        if (Regex.IsMatch(Course, courseRegex))
-        {
-            course = Course;
-            return true;
-        }
-        else
-        {
-            course = "";
-            throw new Exception("Invalid format, try again");
-        }
-    }
-    public bool TryGetEmail(out string email)
-    {
-        Console.WriteLine("Enter your email:");
-        string emailRegex = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
-        string Email = GetProperInput();
-        if (Regex.IsMatch(Email, emailRegex))
-        {
-            email = Email;
-            return true;
-        }
-        else
-        {
-            email = "";
-            return false;
-        }
-    }
-    public bool TryGetPhone(out string phone)
-    {
-        Console.WriteLine("Enter your phone:");
-        string phoneRegex = @"^\+?[0-9]{1,3}[-. ]?\(?[0-9]{1,4}?\)?[-. ]?[0-9]{1,4}[-. ]?[0-9]{1,9}$"; // international phone number format
-        string Phone = GetProperInput();
-        if (Regex.IsMatch(Phone, phoneRegex))
-        {
-            phone = Phone;
-            return true;
-        }
-        else
-        {
-            phone = "";
-            return false;
-        }
-    }
-    public bool TryGetSex(out string sex)
-    {
-        Console.WriteLine("Enter your sex in format (Male|Female|Other):");
-        string maleRegex = @"^(?:Male|Female|Other)$";
-        string Male = GetProperInput();
-        if (!Regex.IsMatch(Male.ToLower(), maleRegex))
-        {
-            sex = Male;
-            return true;
-        }
-        else
-        {
-            sex = "";
-            return false;
-        }
-    }
-    public bool TryGetAge(out int age)
-    {
-        Console.WriteLine("Enter your age:");
-        if (int.TryParse(GetProperInput(), out int result) && result > 0 && result < 120)
-        {
-            age = result;
-            return true;
-        }
-        else
-        {
-            age = -1;
-            return false;
-        }
-    }
-    
-
     #endregion
     #region "Recursive Get-Methods"
-    public int GetMenuItem(Dictionary<int, string> menu)
-    {
-        try{
-            if (TryGetMenuItem(menu, out int item))
-            {
-                return item;
-            }
-            else
-            {
-                Console.WriteLine("Invalid number");
-                return GetMenuItem(menu);
-            }
-        }catch (Exception e){
-            Console.WriteLine(e.Message);
-            return GetMenuItem(menu);
-        }
-    }
-    public int GetMenuItem(int range)
-    {
-        try
-        {
-            if (TryGetMenuItem(range, out int item))
-            {
-                return item;
-            }
-            else
-            {
-                Console.WriteLine("Invalid number");
-                return GetMenuItem(range);
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-            return GetMenuItem(range);
-        }
-    }
     public int GetMenuItem(List<int> list)
     {
         try
@@ -241,93 +110,47 @@ public class Input
             return GetMenuItem(list);
         }
     }
-    public DateTime GetStartDate()
+    public int GetMenuItem(Dictionary<int, string> menu) => GetMenuItem(menu.Keys.ToList());
+    public int GetMenuItem(int range) => GetMenuItem(Enumerable.Range(1, range).ToList());
+    public delegate bool TryParseDateDelegate(out DateTime date, string prompt);
+    public string GetDate(string prompt, TryParseDateDelegate parser)
     {
-        if(TryGetStartDate(out DateTime startDate))
+        if (parser(out DateTime startDate, prompt))
         {
-            return startDate;
+            return startDate.ToString();
         }
         else
         {
-            Console.WriteLine("Invalid date format");
+            Console.WriteLine($"Invalid {prompt} format");
             return GetStartDate();
         }
     }
-    public string GetTitle()
-    {
-        if(TryGetTitle(out string name))
+    public string GetStartDate() => GetDate("start date", TryGetDate);
+    public string GetBirth() => GetDate("birth date", TryGetDate);
+    public delegate bool TryParseDelegate(out string value, string prompt, string regex);
+    public string GetInput(TryParseDelegate parser, string prompt, string regex)
+    { 
+        if (parser(out string value,prompt, regex))
         {
-            return name;
+            return value;
         }
         else
         {
-            Console.WriteLine("Invalid format, try again");
-            return GetTitle();
+            Console.WriteLine($"Invalid {prompt}, try again");
+            return GetInput(parser, prompt, regex);
         }
     }
-    public string GetEmail()
-    {
-        if(TryGetEmail(out string email))
-        {
-            return email;
-        }
-        else
-        {
-            Console.WriteLine("Invalid Email");
-            return GetEmail();
-        }
-    }
-    public string GetPhone()
-    {
-        if(TryGetPhone(out string phone))
-        {
-            return phone;
-        }
-        else
-        {
-            Console.WriteLine("Invalid Phone");
-            return GetPhone();
-        }
-    }
-    public int GetBirth()
-    {
-        if(TryGetAge(out int age))
-        {
-            return age;
-        }
-        else
-        {
-            Console.WriteLine("Invalid Date");
-            return GetBirth();
-        }
-    }
-    public string GetCourse()
-    {
-        if(TryGetCourse(out string course))
-        {
-            return course;
-        }
-        else
-        {
-            Console.WriteLine("Invalid Course");
-            return GetCourse();
-        }
-    }
-    public string GetSex()
-    {
-        if(TryGetSex(out string sex))
-        {
-            return sex;
-        }
-        else
-        {
-            Console.WriteLine("Invalid sex");
-            return GetSex();
-        }
-    }
+    public string GetEmail() => GetInput(TryGetTitle,"email",_emailRegex);
+    public string GetPhone() => GetInput(TryGetTitle,"phone",_phoneRegex);
+    public string GetCourse() => GetInput(TryGetTitle,"course",_courseRegex);
+    public string GetSex() => GetInput(TryGetTitle,"sex",_sexRegex);
+    public string GetName() => GetInput(TryGetTitle, "name", _nameRegex);
+    public string GetSurname() => GetInput(TryGetTitle, "surname", _nameRegex);
+    public string GetSubject() => GetInput(TryGetTitle,"subject",_courseRegex);
     public bool GetConfirmation()
     {
-        try{
+        try
+        {
             if (TryGetConfirmation(out bool yesNo))
             {
                 return yesNo;
@@ -337,7 +160,9 @@ public class Input
                 Console.WriteLine("Invalid input");
                 return GetConfirmation();
             }
-        }catch (Exception e){
+        }
+        catch (Exception e)
+        {
             Console.WriteLine(e.Message);
             return GetConfirmation();
         }
@@ -351,22 +176,22 @@ public class Input
 
         while (true)
         {
-            key = Console.ReadKey(true); 
+            key = Console.ReadKey(true);
 
             if (key.Key == ConsoleKey.Enter)
             {
-                Console.WriteLine(); 
+                Console.WriteLine();
                 return input.ToString().Trim();
             }
             else if (key.Key == ConsoleKey.Escape)
             {
-                Console.WriteLine(); 
-                return null; 
+                Console.WriteLine();
+                return null;
             }
             else if (key.Key == ConsoleKey.Backspace && input.Length > 0)
             {
                 input.Remove(input.Length - 1, 1);
-                Console.Write("\b \b"); 
+                Console.Write("\b \b");
             }
             else if (!char.IsControl(key.KeyChar))
             {
