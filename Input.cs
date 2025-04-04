@@ -20,9 +20,12 @@ public class Input
         else
         {
             string? userInput = Console.ReadLine();
-            if (!string.IsNullOrEmpty(userInput)){
+            if (!string.IsNullOrEmpty(userInput))
+            {
                 return userInput.Trim();
-            }else{
+            }
+            else
+            {
                 return string.Empty;
             }
         }
@@ -30,10 +33,10 @@ public class Input
 
     #region "TryParsing-Methods"
 
-    public bool TryGetMenuItem(List<int> list, out int item)
+    public bool TryGetMenuItem(List<int> list, out int item, string prompt = "Select a menu item:", bool withESC = false)
     {
-        Console.WriteLine("Select a menu item:");
-        if (int.TryParse(GetProperInput(false), out int number) && list.Contains(number))
+        Console.WriteLine(prompt);
+        if (int.TryParse(GetProperInput(withESC), out int number) && list.Contains(number))
         {
             item = number;
             return true;
@@ -89,11 +92,17 @@ public class Input
     #endregion
     #region "Recursive Get-Methods"
 
-    public int GetMenuItem(List<int> list)
+    public int GetMenuItem(List<int> list, string prompt = "", bool withESC = false)
     {
         try
         {
-            if (TryGetMenuItem(list, out int item))
+            if (TryGetMenuItem(list, out int item, string.IsNullOrEmpty(prompt) ? "Select a menu item:" : prompt, withESC))
+            {
+                Console.Clear();
+                Console.WriteLine($"You selected: {item}");
+                return item;
+            }
+            else if (int.TryParse(GetProperInput(), out int number) && list.Contains(number))
             {
                 return item;
             }
@@ -102,6 +111,8 @@ public class Input
                 Console.WriteLine("Invalid number");
                 return GetMenuItem(list);
             }
+        }catch (EcsException){
+            throw new EcsException(); //pass through to make ESC work
         }
         catch (Exception e)
         {
@@ -109,8 +120,8 @@ public class Input
             return GetMenuItem(list);
         }
     }
-    public int GetMenuItem(Dictionary<int, string> menu) => GetMenuItem(menu.Keys.ToList());
-    public int GetMenuItem(int range) => GetMenuItem(Enumerable.Range(1, range).ToList());
+    public int GetMenuItem(Dictionary<int, string> menu, string prompt = "", bool withESC = false) => GetMenuItem(menu.Keys.ToList(), prompt, withESC);
+    public int GetMenuItem(int range, string prompt = "", bool withESC = false) => GetMenuItem(Enumerable.Range(1, range).ToList(), prompt, withESC);
     public bool GetConfirmation()
     {
         if (TryGetConfirmation(out bool yesNo))
@@ -140,10 +151,10 @@ public class Input
     }
     public string GetStartDate() => GetDate("start date", TryGetDate);
     public string GetBirth() => GetDate("birth date", TryGetDate);
-    
+
     public string GetInput(TryParseStringDelegate parser, string prompt, string regex)
-    { 
-        if (parser(out string value,prompt, regex))
+    {
+        if (parser(out string value, prompt, regex))
         {
             return value;
         }
@@ -154,13 +165,13 @@ public class Input
         }
     }
     public string GetInput(string prompt, string regex) => GetInput(TryGetTitle, prompt, regex);
-    public string GetEmail() => GetInput("email",_emailRegex);
-    public string GetPhone() => GetInput("phone",_phoneRegex);
-    public string GetCourse() => GetInput("course",_courseRegex);
-    public string GetSex() => GetInput("sex",_sexRegex);
+    public string GetEmail() => GetInput("email", _emailRegex);
+    public string GetPhone() => GetInput("phone", _phoneRegex);
+    public string GetCourse() => GetInput("course", _courseRegex);
+    public string GetSex() => GetInput("sex", _sexRegex);
     public string GetName() => GetInput("name", _nameRegex);
     public string GetSurname() => GetInput("surname", _nameRegex);
-    public string GetSubject() => GetInput("subject",_courseRegex);
+    public string GetSubject() => GetInput("subject", _courseRegex);
     #endregion
     #endregion
     public string? GetKeyReading(string prompt)

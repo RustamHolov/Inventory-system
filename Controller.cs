@@ -32,7 +32,8 @@ public class Controller
                     "StartDate" => _input.GetStartDate(),
                     _ => throw new Exception($"Warning: Unknown field '{fieldName}'. No input taken.")
                 };
-            } catch { } // Make ESC button work
+            }
+            catch { } // Make ESC button work
 
             if (newValue != null) fields[fieldName] = newValue; // Default to null for safety
         }
@@ -58,7 +59,7 @@ public class Controller
     private void EditField(Dictionary<string, string> fields)
     {
         _view.DisplayForm(fields, count: true);
-        int choise = _input.GetMenuItem(fields.Count);
+        int choise = _input.GetMenuItem(fields.Count, withESC: true);
         string fieldName = fields.Keys.ElementAt(choise - 1);
         GetAndSetFields(fields, fieldName);
         _view.DisplayForm(fields);
@@ -102,7 +103,7 @@ public class Controller
             switch (_input.GetMenuItem(_view.AddMenu))
             {
                 case 1: FillForm(fields); addMenu(); break;
-                case 2: EditField(fields); addMenu(); break;
+                case 2: try{EditField(fields); addMenu(); break;}catch{Console.Clear();addMenu();break;/*back*/} 
                 case 3: SaveMember(fields, member); addMenu(); break;
                 case 9: Console.Clear(); MainMenu(); break;
                 case 0: Exit(); break;
@@ -128,33 +129,39 @@ public class Controller
     private void EditMember()
     {
         _view.DisplayMembers(_dataBase.Members);
-        Console.WriteLine("[ID of the member you want to edit]");
-        int id = _input.GetMenuItem(_dataBase.Members.Keys.ToList());
-        Member member = _dataBase.GetMember(id);
-        Dictionary<string, string> fields = member.GetPropertiesAndValues();
-        _view.DisplayForm(fields);
-        void editMenu()
-        {
-            _view.DisplayMenu(_view.EditMenu);
-            switch (_input.GetMenuItem(_view.EditMenu))
+        try{
+            Console.WriteLine("[ID of the member you want to edit]");
+            int id = _input.GetMenuItem(_dataBase.Members.Keys.ToList(), withESC: true);
+            Member member = _dataBase.GetMember(id);
+            Dictionary<string, string> fields = member.GetPropertiesAndValues();
+            _view.DisplayForm(fields);
+            void editMenu()
             {
-                case 1: EditField(fields); editMenu(); break;
-                case 2: SaveMember(fields, member, id); editMenu(); break;
-                case 9: Console.Clear(); MainMenu(); break;
-                case 0: Exit(); break;
+                _view.DisplayMenu(_view.EditMenu);
+                switch (_input.GetMenuItem(_view.EditMenu))
+                {
+                    case 1: EditField(fields); editMenu(); break;
+                    case 2: SaveMember(fields, member, id); editMenu(); break;
+                    case 9: Console.Clear(); MainMenu(); break;
+                    case 0: Exit(); break;
+                }
             }
+            editMenu();
+        }catch(Exception){ //back
+            Console.Clear();
+            MainMenu();
         }
-        editMenu();
     }
 
     private void DeleteMember()
     {
         _view.DisplayMembers(_dataBase.Members);
-        Console.WriteLine("[ID of the member you want to delete]");
-        int id = _input.GetMenuItem(_dataBase.Members.Keys.ToList());
-        Console.Clear();
-        Console.WriteLine($"Are you sure you want to delete:\n[ID:{id} {_dataBase.GetMember(id)}]");
-        try{
+        
+        try
+        {
+            int id = _input.GetMenuItem(_dataBase.Members.Keys.ToList(), "Enter the ID of the member you want to delete:", withESC: true);
+            Console.Clear();
+            Console.WriteLine($"Are you sure you want to delete:\n[ID:{id} {_dataBase.GetMember(id)}]");
             bool confirmation = _input.GetConfirmation();
             if (confirmation)
             {
@@ -175,9 +182,11 @@ public class Controller
                 Console.Clear();
                 _view.DisplayMessageUnderscore("Member deletion cancelled.");
             }
-        }catch{
+        }
+        catch (Exception)
+        { //back
             Console.Clear();
-            DeleteMember();
+            MainMenu();
         }
     }
     private void DisplayMembers()
@@ -197,21 +206,24 @@ public class Controller
     }
     private void Exit()
     {
-            if (_dataBase.edited)
+        if (_dataBase.edited)
+        {
+            Console.Write("Do you want to save changes before exiting");
+            try
             {
-                Console.Write("Do you want to save changes before exiting");
-                try{
-                    bool confirmation = _input.GetConfirmation();
-                    if (confirmation)
-                    {
-                        SaveDataBase();
-                    }
-                }catch (Exception){
-                    Console.Clear();
-                    MainMenu();
+                bool confirmation = _input.GetConfirmation();
+                if (confirmation)
+                {
+                    SaveDataBase();
                 }
             }
-            Environment.Exit(0);
+            catch (Exception)
+            {
+                Console.Clear();
+                MainMenu();
+            }
+        }
+        Environment.Exit(0);
     }
     private void MainMenu()
     {
