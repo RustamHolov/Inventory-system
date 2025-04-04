@@ -19,7 +19,7 @@ public class View
     public Dictionary<int, string> RoleMenu = new Dictionary<int, string>(){
         {1, "Teacher"},
         {2, "Student"},
-        {3, "Unspecified"},
+        {3, "Member"},
         {9, "Previous Menu"},
         {0, "Exit"}
     };
@@ -30,7 +30,7 @@ public class View
         {0, "Exit"}
     };
     public string InfoInFrame(string info)
-    {                             //auto-adjustable one line frame
+    {                             //auto-adjustable one-line frame
         int contentLength = info.Length + 2;        // +2 to include whitespaces both at start and end
         string line = new string('═', contentLength);
         string top = "╔" + line + "╗";
@@ -39,7 +39,7 @@ public class View
         string framed = $"{top}\n{middle}\n{bottom}\n";
         return framed;
     }
-    public string InfoInBorders(string info)
+    public string InfoLBorder(string info)
     {
         string middle = "║ " + info + "\n";
         return middle;
@@ -51,7 +51,7 @@ public class View
         {
             Console.WriteLine($"{items.Key}. {items.Value}");
         }
-        Console.WriteLine("─────────────────────────────");
+        DisplayUndercsore();
     }
     public void DisplayMembers(Dictionary<int, Member> members, string[] flags) { } //TODO implement sorting
     public void DisplayMembers(Dictionary<int, Member> members)
@@ -60,15 +60,15 @@ public class View
         Console.WriteLine(InfoInFrame("Members"));
         foreach (var member in members)
         {
-            Console.Write($"ID: {member.Key} {InfoInBorders(member.Value.ToString())}");
+            Console.Write($"ID: {member.Key} {InfoLBorder(member.Value.ToString())}");
         }
-        Console.WriteLine("─────────────────────────────");
+        DisplayUndercsore();
     }
     public void DisplaySingleMember(Member member)
     {
         Console.WriteLine(InfoInFrame("Member"));
-        Console.WriteLine(InfoInBorders(member.ToString()));
-        Console.WriteLine("─────────────────────────────");
+        Console.WriteLine(InfoLBorder(member.ToString()));
+        DisplayUndercsore();
 
     }
     public void DisplayForm(Dictionary<string, string> fields, string fieldName = "",bool count = false)
@@ -82,7 +82,7 @@ public class View
             Console.WriteLine($"{(count ? i + "." : "")} {(editing && chosenField ? "    > " + field.Key : field.Key)}: {(field.Value == string.Empty ? "" : field.Value)}");
             i++;
         }
-        Console.WriteLine("─────────────────────────────");
+        DisplayUndercsore();
     }
     public void DisplayException(Exception ex) { }
 

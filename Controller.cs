@@ -1,3 +1,4 @@
+
 public class Controller
 {
     private readonly View _view;
@@ -103,7 +104,7 @@ public class Controller
             switch (_input.GetMenuItem(_view.AddMenu))
             {
                 case 1: FillForm(fields); addMenu(); break;
-                case 2: try{EditField(fields); addMenu(); break;}catch{Console.Clear();addMenu();break;/*back*/} 
+                case 2: try { EditField(fields); addMenu(); break; } catch (EscException) { Console.Clear(); addMenu(); break;/*back*/}
                 case 3: SaveMember(fields, member); addMenu(); break;
                 case 9: Console.Clear(); MainMenu(); break;
                 case 0: Exit(); break;
@@ -129,7 +130,8 @@ public class Controller
     private void EditMember()
     {
         _view.DisplayMembers(_dataBase.Members);
-        try{
+        try
+        {
             Console.WriteLine("[ID of the member you want to edit]");
             int id = _input.GetMenuItem(_dataBase.Members.Keys.ToList(), withESC: true);
             Member member = _dataBase.GetMember(id);
@@ -147,7 +149,9 @@ public class Controller
                 }
             }
             editMenu();
-        }catch(Exception){ //back
+        }
+        catch (EscException)
+        { //back
             Console.Clear();
             MainMenu();
         }
@@ -156,7 +160,7 @@ public class Controller
     private void DeleteMember()
     {
         _view.DisplayMembers(_dataBase.Members);
-        
+
         try
         {
             int id = _input.GetMenuItem(_dataBase.Members.Keys.ToList(), "Enter the ID of the member you want to delete:", withESC: true);
@@ -183,7 +187,7 @@ public class Controller
                 _view.DisplayMessageUnderscore("Member deletion cancelled.");
             }
         }
-        catch (Exception)
+        catch (EscException)
         { //back
             Console.Clear();
             MainMenu();
@@ -217,26 +221,32 @@ public class Controller
                     SaveDataBase();
                 }
             }
-            catch (Exception)
+            catch (EscException) //back
             {
                 Console.Clear();
                 MainMenu();
             }
         }
+        Console.WriteLine("Program finished successfully!");
         Environment.Exit(0);
     }
-    private void MainMenu()
+    private void MainMenu(bool esc = false)
     {
-        _view.DisplayUndercsore();
-        _view.DisplayMenu(_view.Menu);
-        switch (_input.GetMenuItem(_view.Menu))
-        {
-            case 1: AddRoledMember(); break;
-            case 2: EditMember(); break;
-            case 3: DeleteMember(); MainMenu(); break;
-            case 4: DisplayMembers(); MainMenu(); break;
-            case 5: SaveDataBase(); MainMenu(); break;
-            case 0: Exit(); break;
+        try{
+            _view.DisplayUndercsore();
+            _view.DisplayMenu(_view.Menu);
+            switch (_input.GetMenuItem(_view.Menu, withESC: esc))
+            {
+                case 1: AddRoledMember(); break;
+                case 2: EditMember(); break;
+                case 3: DeleteMember(); MainMenu(); break;
+                case 4: DisplayMembers(); MainMenu(esc: true); break;
+                case 5: SaveDataBase(); MainMenu(); break;
+                case 0: Exit(); break;
+            }
+        }catch (EscException){
+            Console.Clear();
+            MainMenu();
         }
     }
 

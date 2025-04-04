@@ -1,3 +1,4 @@
+
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -15,7 +16,7 @@ public class Input
     {
         if (readKey)
         {
-            return GetKeyReading("*OR press ESC to go back*") ?? throw new EcsException();
+            return GetKeyReading("*OR press ESC to go back*") ?? throw new EscException();
         }
         else
         {
@@ -94,29 +95,14 @@ public class Input
 
     public int GetMenuItem(List<int> list, string prompt = "", bool withESC = false)
     {
-        try
+        if (TryGetMenuItem(list, out int item, string.IsNullOrEmpty(prompt) ? "Select a menu item:" : prompt, withESC))
         {
-            if (TryGetMenuItem(list, out int item, string.IsNullOrEmpty(prompt) ? "Select a menu item:" : prompt, withESC))
-            {
-                Console.Clear();
-                Console.WriteLine($"You selected: {item}");
-                return item;
-            }
-            else if (int.TryParse(GetProperInput(), out int number) && list.Contains(number))
-            {
-                return item;
-            }
-            else
-            {
-                Console.WriteLine("Invalid number");
-                return GetMenuItem(list);
-            }
-        }catch (EcsException){
-            throw new EcsException(); //pass through to make ESC work
+            Console.Clear();
+            return item;
         }
-        catch (Exception e)
+        else
         {
-            Console.WriteLine(e.Message);
+            Console.WriteLine("Invalid number");
             return GetMenuItem(list);
         }
     }
@@ -205,10 +191,5 @@ public class Input
                 Console.Write(key.KeyChar);
             }
         }
-    }
-    public class EcsException : Exception
-    {
-        public EcsException() : base() { }
-        public EcsException(string message) : base(message) { }
     }
 }

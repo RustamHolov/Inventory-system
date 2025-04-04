@@ -1,5 +1,6 @@
 ﻿namespace Inventory_system;
 // hide members after show
+// look for hard-coded places
 class Program
 {
     static void Main(string[] args)
