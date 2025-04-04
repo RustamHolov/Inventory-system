@@ -63,7 +63,7 @@ public class Controller
         {
             _view.DisplayForm(fields, count: true);
             _view.DisplayUndercsore();
-            int choise = _input.GetMenuItem(fields.Count, withESC: true);
+            int choise = _input.GetMenuItem(fields.Count, prompt:"Choose field to edit: ", withESC: true);
             string fieldName = fields.Keys.ElementAt(choise - 1);
             GetAndSetFields(fields, fieldName);
             _view.DisplayForm(fields);
@@ -90,7 +90,7 @@ public class Controller
                     _dataBase.EditMember(id, member);
                 }
                 _view.DisplayForm(fields);
-                _view.DisplayMessageUnderScore("Changes saved successfully!");
+                _view.DisplayMessageUpperScore("Changes saved successfully!");
             }
             catch (Exception e)
             {
@@ -142,7 +142,7 @@ public class Controller
         try
         {
             Console.WriteLine("[ID of the member you want to edit]");
-            int id = _input.GetMenuItem(_dataBase.Members.Keys.ToList(), withESC: true);
+            int id = _input.GetMenuItem(_dataBase.Members.Keys.ToList(),prompt: "ID: ", withESC: true);
             Member member = _dataBase.GetMember(id);
             Dictionary<string, string> fields = member.GetPropertiesAndValues();
             _view.DisplayForm(fields);
@@ -172,7 +172,7 @@ public class Controller
 
         try
         {
-            int id = _input.GetMenuItem(_dataBase.Members.Keys.ToList(), "Enter the ID of the member you want to delete:", withESC: true);
+            int id = _input.GetMenuItem(_dataBase.Members.Keys.ToList(), prompt: "Enter the ID of the member you want to delete:", withESC: true);
             Console.Clear();
             _view.DisplaySingleMember(id, _dataBase.GetMember(id));
             Console.Write("Are you sure you want to delete this entry");
@@ -215,7 +215,7 @@ public class Controller
         {
             _dataBase.SaveToCSV();
             _dataBase.edited = false;
-            Console.WriteLine("Data saved successfully!");
+            Console.WriteLine("*Data saved*");
         }
     }
     private void Exit()
@@ -229,6 +229,11 @@ public class Controller
                 if (confirmation)
                 {
                     SaveDataBase();
+                }else{
+                    Console.Clear();
+                    Console.WriteLine("*Exited without saving*");
+                    Console.WriteLine("Program finished successfully!");
+                    Environment.Exit(0);
                 }
             }
             catch (EscException) //back

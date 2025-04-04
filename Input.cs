@@ -12,14 +12,17 @@ public class Input
     private const string _sexRegex = @"^(?:[Mm]ale|[Ff]emale|[Oo]ther)$";
 
     #endregion
-    public string GetProperInput(bool readKey = true)
+    public string GetProperInput(bool readKey = true, string prompt = "")
     {
         if (readKey)
         {
-            return GetKeyReading("*OR press ESC to go back*") ?? throw new EscException();
+            Console.WriteLine("*OR press ESC to go back*");
+            Console.WriteLine(prompt);
+            return GetKeyReading() ?? throw new EscException();
         }
         else
         {
+            Console.WriteLine(prompt);
             string? userInput = Console.ReadLine();
             if (!string.IsNullOrEmpty(userInput))
             {
@@ -34,10 +37,10 @@ public class Input
 
     #region "TryParsing-Methods"
 
-    public bool TryGetMenuItem(List<int> list, out int item, string prompt = "Select a menu item:", bool withESC = false)
+    public bool TryGetMenuItem(List<int> list, out int item, string prompt = "", bool withESC = false)
     {
-        Console.WriteLine(prompt);
-        if (int.TryParse(GetProperInput(withESC), out int number) && list.Contains(number))
+        
+        if (int.TryParse(GetProperInput(withESC, prompt), out int number) && list.Contains(number))
         {
             item = number;
             return true;
@@ -62,8 +65,7 @@ public class Input
 
     public bool TryGetDate(out DateTime startDate, string prompt)
     {
-        Console.WriteLine($"Enter the {prompt}:");
-        if (DateTime.TryParse(GetProperInput(), out DateTime result))
+        if (DateTime.TryParse(GetProperInput(prompt: $"Enter the {prompt}:"), out DateTime result))
         {
             startDate = result;
             return true;
@@ -77,8 +79,7 @@ public class Input
 
     public bool TryGetTitle(out string name, string prompt, string regex)
     {
-        Console.WriteLine($"Enter the {prompt}:");
-        string Name = GetProperInput();
+        string Name = GetProperInput(prompt: $"Enter the {prompt}:");
         if (Regex.IsMatch(Name, regex))
         {
             name = Name;
@@ -103,7 +104,7 @@ public class Input
         else
         {
             Console.WriteLine("Invalid number");
-            return GetMenuItem(list, withESC:withESC);
+            return GetMenuItem(list, prompt, withESC);
         }
     }
     public int GetMenuItem(Dictionary<int, string> menu, string prompt = "", bool withESC = false) => GetMenuItem(menu.Keys.ToList(), prompt, withESC);
@@ -160,9 +161,8 @@ public class Input
     public string GetSubject() => GetInput("subject", _courseRegex);
     #endregion
     #endregion
-    public string? GetKeyReading(string prompt)
+    public string? GetKeyReading()
     {
-        Console.WriteLine(prompt);
         StringBuilder input = new StringBuilder();
         ConsoleKeyInfo key;
 
