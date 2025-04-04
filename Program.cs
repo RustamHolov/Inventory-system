@@ -1,5 +1,5 @@
 ﻿namespace Inventory_system;
-// hide members after show
+// TODO
 // look for hard-coded places
 class Program
 {

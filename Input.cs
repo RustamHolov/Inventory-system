@@ -103,7 +103,7 @@ public class Input
         else
         {
             Console.WriteLine("Invalid number");
-            return GetMenuItem(list);
+            return GetMenuItem(list, withESC:withESC);
         }
     }
     public int GetMenuItem(Dictionary<int, string> menu, string prompt = "", bool withESC = false) => GetMenuItem(menu.Keys.ToList(), prompt, withESC);

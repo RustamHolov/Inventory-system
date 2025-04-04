@@ -36,21 +36,29 @@ public class View
         string top = "╔" + line + "╗";
         string middle = "║ " + info + " ║";
         string bottom = "╚" + line + "╝";
-        string framed = $"{top}\n{middle}\n{bottom}\n";
+        string framed = $"{top}\n{middle}\n{bottom}";
         return framed;
     }
     public string InfoLBorder(string info)
     {
-        string middle = "║ " + info + "\n";
+        string middle = "║ " + info;
         return middle;
     }
 
     public void DisplayMenu(Dictionary<int, string> menu)
     {
+        DisplayUndercsore();
         foreach (var items in menu)
         {
-            Console.WriteLine($"{items.Key}. {items.Value}");
+            if (items.Key != 9 && items.Key != 0)
+            {
+                Console.WriteLine($"{items.Key}. {items.Value}");
+            }
         }
+        Console.WriteLine(".");
+        Console.WriteLine(".");
+        if (menu.ContainsKey(9)) Console.WriteLine($"9. {menu[9]}");
+        Console.WriteLine($"0. {menu[0]}");
         DisplayUndercsore();
     }
     public void DisplayMembers(Dictionary<int, Member> members, string[] flags) { } //TODO implement sorting
@@ -60,18 +68,15 @@ public class View
         Console.WriteLine(InfoInFrame("Members"));
         foreach (var member in members)
         {
-            Console.Write($"ID: {member.Key} {InfoLBorder(member.Value.ToString())}");
+            Console.WriteLine(InfoLBorder($"ID:{member.Key} {InfoLBorder(member.Value.ToString())}"));
         }
         DisplayUndercsore();
     }
-    public void DisplaySingleMember(Member member)
+    public void DisplaySingleMember(int id, Member member)
     {
-        Console.WriteLine(InfoInFrame("Member"));
-        Console.WriteLine(InfoLBorder(member.ToString()));
-        DisplayUndercsore();
-
+        Console.WriteLine(InfoInFrame($"ID:{id} {InfoLBorder(member.ToString())}"));
     }
-    public void DisplayForm(Dictionary<string, string> fields, string fieldName = "",bool count = false)
+    public void DisplayForm(Dictionary<string, string> fields, string fieldName = "", bool count = false)
     { //Displays object with empty or filled fields, show if field is being edited or give fields numbers. Takes dictionary of properties and their values of the object
         bool editing = fieldName != string.Empty;
         Console.Clear();
@@ -82,19 +87,23 @@ public class View
             Console.WriteLine($"{(count ? i + "." : "")} {(editing && chosenField ? "    > " + field.Key : field.Key)}: {(field.Value == string.Empty ? "" : field.Value)}");
             i++;
         }
-        DisplayUndercsore();
     }
-    public void DisplayException(Exception ex) { }
+    public void DisplayException(Exception e) { Console.WriteLine(e.Message); }
 
-    
+
     public void DisplayUndercsore()
     {
         Console.WriteLine("─────────────────────────────");
     }
-    public void DisplayMessageUnderscore(string message)
+    public void DisplayMessageUnderScore(string message)
     {
         Console.WriteLine(message);
         DisplayUndercsore();
     }
-    
+    public void DisplayMessageUpperScore(string message)
+    {
+        DisplayUndercsore();
+        Console.WriteLine(message);
+    }
+
 }

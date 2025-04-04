@@ -15,6 +15,7 @@ public class Controller
     {
         Console.Clear();
         _view.DisplayForm(fields, fieldName);
+        _view.DisplayUndercsore();
         if (fields.ContainsKey(fieldName))
         {
             string? newValue = null;
@@ -35,7 +36,6 @@ public class Controller
                 };
             }
             catch { } // Make ESC button work
-
             if (newValue != null) fields[fieldName] = newValue; // Default to null for safety
         }
         else
@@ -54,16 +54,25 @@ public class Controller
                 GetAndSetFields(fields, fieldName);
             }
         }
-        _view.DisplayMessageUnderscore("All fields filled out successfully!");
+        _view.DisplayMessageUnderScore("All fields filled out successfully!");
         _view.DisplayForm(fields);
     }
     private void EditField(Dictionary<string, string> fields)
     {
-        _view.DisplayForm(fields, count: true);
-        int choise = _input.GetMenuItem(fields.Count, withESC: true);
-        string fieldName = fields.Keys.ElementAt(choise - 1);
-        GetAndSetFields(fields, fieldName);
-        _view.DisplayForm(fields);
+        try
+        {
+            _view.DisplayForm(fields, count: true);
+            _view.DisplayUndercsore();
+            int choise = _input.GetMenuItem(fields.Count, withESC: true);
+            string fieldName = fields.Keys.ElementAt(choise - 1);
+            GetAndSetFields(fields, fieldName);
+            _view.DisplayForm(fields);
+        }
+        catch (EscException)
+        {
+            Console.Clear();
+            _view.DisplayForm(fields);
+        }
     }
     private void SaveMember(Dictionary<string, string> fields, Member member, int id = 0)
     {
@@ -81,17 +90,17 @@ public class Controller
                     _dataBase.EditMember(id, member);
                 }
                 _view.DisplayForm(fields);
-                _view.DisplayMessageUnderscore("Changes saved successfully!");
+                _view.DisplayMessageUnderScore("Changes saved successfully!");
             }
             catch (Exception e)
             {
-                _view.DisplayMessageUnderscore(e.Message);
+                _view.DisplayMessageUnderScore(e.Message);
             }
         }
         else
         {
             _view.DisplayForm(fields);
-            _view.DisplayMessageUnderscore("Please fill out all fields before saving.");
+            _view.DisplayMessageUpperScore("Please fill out all fields before saving.");
         }
     }
     private void AddMember(Member member)
@@ -104,7 +113,7 @@ public class Controller
             switch (_input.GetMenuItem(_view.AddMenu))
             {
                 case 1: FillForm(fields); addMenu(); break;
-                case 2: try { EditField(fields); addMenu(); break; } catch (EscException) { Console.Clear(); addMenu(); break;/*back*/}
+                case 2: EditField(fields); addMenu(); break;
                 case 3: SaveMember(fields, member); addMenu(); break;
                 case 9: Console.Clear(); MainMenu(); break;
                 case 0: Exit(); break;
@@ -165,7 +174,8 @@ public class Controller
         {
             int id = _input.GetMenuItem(_dataBase.Members.Keys.ToList(), "Enter the ID of the member you want to delete:", withESC: true);
             Console.Clear();
-            Console.WriteLine($"Are you sure you want to delete:\n[ID:{id} {_dataBase.GetMember(id)}]");
+            _view.DisplaySingleMember(id, _dataBase.GetMember(id));
+            Console.Write("Are you sure you want to delete this entry");
             bool confirmation = _input.GetConfirmation();
             if (confirmation)
             {
@@ -178,13 +188,13 @@ public class Controller
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
+                    _view.DisplayException(e);
                 }
             }
             else
             {
                 Console.Clear();
-                _view.DisplayMessageUnderscore("Member deletion cancelled.");
+                _view.DisplayMessageUnderScore("Member deletion cancelled.");
             }
         }
         catch (EscException)
@@ -232,8 +242,8 @@ public class Controller
     }
     private void MainMenu(bool esc = false)
     {
-        try{
-            _view.DisplayUndercsore();
+        try
+        {
             _view.DisplayMenu(_view.Menu);
             switch (_input.GetMenuItem(_view.Menu, withESC: esc))
             {
@@ -244,7 +254,9 @@ public class Controller
                 case 5: SaveDataBase(); MainMenu(); break;
                 case 0: Exit(); break;
             }
-        }catch (EscException){
+        }
+        catch (EscException)
+        {
             Console.Clear();
             MainMenu();
         }
@@ -254,6 +266,7 @@ public class Controller
     {
         while (true)
         {
+            Console.Clear();
             MainMenu();
             break;
         }
